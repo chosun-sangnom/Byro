@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Byro — MVP Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D0D0D;--s1:#161616;--s2:#1E1E1E;--s3:#272727;
+  --b:#2A2A2A;--t:#F5F5F5;--ts:#BCBCBC;--tm:#888;--td:#444;
+  --g:#4CAF50;--gb:rgba(76,175,80,.15);--r:12px;
+  --ig:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366);
+}
+html,body{background:#111;min-height:100vh;font-family:'Pretendard',sans-serif;color:var(--t);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.shell{width:375px;min-height:100vh;background:var(--bg);margin:0 auto;position:relative;overflow:hidden}
+@media(min-width:500px){
+  body{display:flex;justify-content:center;padding:24px 0}
+  .shell{min-height:812px;border-radius:40px;box-shadow:0 0 0 1px #2a2a2a,0 40px 100px rgba(0,0,0,.9);overflow:hidden}
+}
+
+/* ── Screens ── */
+.screen{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateX(24px);transition:opacity .2s ease,transform .2s ease;z-index:1}
+.screen.active{opacity:1;pointer-events:all;transform:none;z-index:2}
+.screen.out{opacity:0;transform:translateX(-24px)}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden}
+.scroll::-webkit-scrollbar{display:none}
+
+/* ── Nav ── */
+.nav{height:56px;background:var(--bg);display:flex;align-items:center;padding:0 20px;gap:8px;flex-shrink:0;position:relative;border-bottom:1px solid transparent}
+.nav.line{border-bottom-color:var(--b)}
+.logo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--t)}
+.ntitle{font-size:17px;font-weight:600;position:absolute;left:50%;transform:translateX(-50%);pointer-events:none}
+.nsp{flex:1}
+.ibtn{background:none;border:none;color:var(--t);cursor:pointer;padding:6px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:background .15s}
+.ibtn:hover{background:var(--s2)}
+.tbtn{background:none;border:none;color:var(--t);font-family:'Pretendard',sans-serif;font-size:14px;font-weight:600;cursor:pointer;padding:4px 0}
+.avbtn{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3a3a3a,#1a1a1a);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer;border:none;color:#fff}
+
+/* ── Buttons ── */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:52px;border-radius:var(--r);border:none;cursor:pointer;font-family:'Pretendard',sans-serif;font-size:16px;font-weight:600;transition:opacity .15s,transform .1s;letter-spacing:-.01em}
+.btn:active{transform:scale(.97);opacity:.85}
+.bw{background:#F5F5F5;color:#0D0D0D}
+.bg{background:transparent;color:var(--t);border:1px solid var(--b)}
+.bk{background:#FEE500;color:#000}
+.bn{background:#03C75A;color:#fff}
+.bgg{background:var(--s1);color:var(--t);border:1px solid var(--b)}
+.btn-sm{background:none;border:1px solid var(--b);border-radius:8px;color:var(--ts);font-family:'Pretendard',sans-serif;font-size:12px;font-weight:500;cursor:pointer;padding:5px 10px;transition:background .15s}
+.btn-sm:hover{background:var(--s2)}
+
+/* ── Inputs ── */
+.inp{background:var(--s1);border:1px solid var(--b);border-radius:10px;height:50px;padding:0 16px;color:var(--t);font-family:'Pretendard',sans-serif;font-size:15px;outline:none;transition:border-color .15s;width:100%}
+.inp:focus{border-color:#555}
+.inp::placeholder{color:var(--td)}
+.ta{height:90px;padding:14px 16px;resize:none;line-height:1.6;font-size:14px}
+
+/* ── Cards ── */
+.card{background:var(--s1);border-radius:var(--r);padding:16px;border:1px solid var(--b)}
+.csm{padding:12px 16px}
+
+/* ── Tags ── */
+.tag{display:inline-flex;align-items:center;padding:8px 16px;background:var(--s2);border-radius:100px;font-size:13px;font-weight:500;color:var(--tm);cursor:pointer;border:1px solid transparent;transition:all .15s;user-select:none}
+.tag.on{background:#F5F5F5;color:#0D0D0D;border-color:#F5F5F5}
+.tag:hover:not(.on){border-color:#444;color:var(--ts)}
+
+/* ── Verified pill ── */
+.pill-v{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:var(--gb);color:var(--g);border:1px solid rgba(76,175,80,.3)}
+.pill-p{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#2D2210;color:#F59E0B;border:1px solid rgba(245,158,11,.3)}
+.pill-n{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:500;background:var(--s2);color:var(--tm);border:1px solid var(--b)}
+
+/* ── Verify rows ── */
+.vrow{display:flex;align-items:center;gap:12px;padding:14px;background:var(--s1);border-radius:var(--r);border:1px solid var(--b);cursor:pointer;transition:border-color .15s}
+.vrow:hover{border-color:#444}
+.vic{width:38px;height:38px;border-radius:9px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+
+/* ── Avatar ── */
+.av{border-radius:50%;background:linear-gradient(135deg,#333,#111);display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid #333;flex-shrink:0}
+.av72{width:72px;height:72px;font-size:26px}
+.av44{width:44px;height:44px;font-size:16px}
+.av36{width:36px;height:36px;font-size:13px}
+
+/* ── Guestbook ── */
+.gentry{display:flex;gap:10px;background:var(--s1);border-radius:var(--r);padding:14px;border:1px solid var(--b);cursor:pointer;transition:border-color .15s}
+.gentry:hover{border-color:#444}
+
+/* ── Link box ── */
+.lbox{display:flex;align-items:center;background:var(--s1);border:1px solid var(--b);border-radius:var(--r);padding:13px 16px}
+.lurl{flex:1;font-size:13px;color:var(--tm);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── Progress ── */
+.pbar{width:100%;height:4px;background:var(--s2);border-radius:100px;overflow:hidden}
+.pfill{height:100%;background:#F5F5F5;border-radius:100px;transition:width .4s}
+.pfill-g{background:var(--g)}
+
+/* ── Step dots ── */
+.sdots{display:flex;gap:5px;align-items:center}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--s3);transition:all .22s}
+.sdot.on{background:#F5F5F5;width:20px;border-radius:3px}
+
+/* ── Tabs ── */
+.tabs{display:flex;border-bottom:1px solid var(--b);flex-shrink:0}
+.tab{flex:1;padding:13px 0;text-align:center;font-size:13px;font-weight:600;color:var(--tm);border-bottom:2px solid transparent;cursor:pointer;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:'Pretendard',sans-serif}
+.tab.on{color:var(--t);border-bottom-color:#F5F5F5}
+
+/* ── Network graph ── */
+.net-graph{position:relative;width:160px;height:160px;margin:0 auto}
+.net-node-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;background:var(--s3);border-radius:50%;border:2px solid #555;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--ts)}
+.net-label{position:absolute;background:var(--s3);border:1px solid var(--b);border-radius:100px;padding:3px 8px;font-size:10px;color:var(--ts);white-space:nowrap}
+
+/* ── Experience list ── */
+.exp-row{display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--s1);border-radius:var(--r);border:1px solid var(--b)}
+
+/* ── Bubbles ── */
+.bubs{display:flex;flex-wrap:wrap;gap:8px}
+.bub-lg{padding:10px 18px;border-radius:100px;background:var(--s2);border:1px solid var(--b);font-size:15px;font-weight:600;color:var(--t)}
+.bub-md{padding:8px 16px;border-radius:100px;background:var(--s2);border:1px solid var(--b);font-size:14px;font-weight:500;color:var(--ts)}
+.bub-sm{padding:7px 14px;border-radius:100px;background:var(--s2);border:1px solid var(--b);font-size:13px;color:var(--tm)}
+
+/* ── Fixed CTA ── */
+.fcta{position:sticky;bottom:0;padding:12px 20px 28px;background:linear-gradient(to top,var(--bg) 60%,transparent);flex-shrink:0}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--s1);border:1px solid var(--b);padding:10px 20px;border-radius:100px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:opacity .22s,transform .22s;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── Bottom sheet modal ── */
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);z-index:100;display:none;align-items:flex-end;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal-sheet{background:var(--bg);border-radius:20px 20px 0 0;width:100%;padding:0 0 40px;max-height:90%;overflow-y:auto;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:40px;height:4px;background:var(--s3);border-radius:100px;margin:14px auto 20px}
+
+/* ── Onboard ── */
+.ob-step{flex:1;padding:28px 20px;display:flex;flex-direction:column}
+
+/* ── AI block ── */
+.ai-box{background:var(--s1);border:1px solid var(--b);border-radius:var(--r);padding:16px}
+.ai-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(255,255,255,.05);border-radius:100px;font-size:11px;color:var(--tm);margin-bottom:10px}
+
+/* ── SNS icons ── */
+.sns-ig{background:var(--ig)}
+.sns-li{background:#0A66C2}
+
+/* ── Divider ── */
+.div{height:1px;background:var(--b);margin:0}
+
+/* ── Utils ── */
+.row{display:flex;align-items:center}
+.btw{display:flex;align-items:center;justify-content:space-between}
+.col{display:flex;flex-direction:column}
+.g4{gap:4px}.g6{gap:6px}.g8{gap:8px}.g10{gap:10px}.g12{gap:12px}.g16{gap:16px}.g20{gap:20px}
+.sech{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sect{font-size:13px;font-weight:600;color:var(--ts)}
+.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--td)}
+.serif{font-family:'DM Serif Display',serif}
+@keyframes pop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ██████████████ H-00 홈 ██████████████ -->
+<div class="screen active" id="s-home">
+  <nav class="nav" style="justify-content:space-between">
+    <span class="logo serif">Byro</span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button id="btn-home-login" class="tbtn" style="color:var(--tm);font-size:13px;font-weight:500" onclick="setAuth(true)">로그인</button>
+      <button class="btn bw" style="height:36px;font-size:13px;width:auto;padding:0 16px;border-radius:100px" onclick="go('s-onboard')">시작하기</button>
+    </div>
+    <button class="avbtn" id="btn-home-av" style="display:none" onclick="go('s-myprofile')">강</button>
+    <button id="btn-home-logout" style="display:none;background:none;border:none;color:var(--tm);font-family:'Pretendard',sans-serif;font-size:13px;cursor:pointer;padding:4px 0 4px 10px;border-left:1px solid var(--b);margin-left:4px" onclick="setAuth(false)">로그아웃</button>
+  </nav>
+
+  <!-- 비로그인 -->
+  <div id="home-guest" class="scroll col">
+    <div style="padding:48px 20px 32px;text-align:center;position:relative">
+      <p style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--tm);margin-bottom:20px;font-weight:500">Build Your Real Offline Identity</p>
+      <h1 class="serif" style="font-size:42px;line-height:1.15;margin-bottom:16px;letter-spacing:-.02em">말하지 않아도<br>증명되는 나</h1>
+      <p style="font-size:15px;color:var(--tm);line-height:1.65;margin-bottom:36px">비즈니스 모임에서 명함 대신<br>신뢰를 공유하세요</p>
+      <button class="btn bw" onclick="go('s-onboard')">내 Byro 만들기</button>
+    </div>
+    <div style="padding:0 20px 12px" class="col g20">
+      <div class="row g16" style="align-items:flex-start">
+        <div style="width:42px;height:42px;border-radius:11px;background:var(--s1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--b)">🔍</div>
+        <div><p style="font-size:14px;font-weight:600;margin-bottom:4px">Before — 상대를 사전에 파악</p><p style="font-size:13px;color:var(--tm);line-height:1.6">모임 전날 링크 하나로 경력·검증 정보 확인</p></div>
+      </div>
+      <div class="row g16" style="align-items:flex-start">
+        <div style="width:42px;height:42px;border-radius:11px;background:var(--s1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--b)">💬</div>
+        <div><p style="font-size:14px;font-weight:600;margin-bottom:4px">During — 명함 대신 링크 공유</p><p style="font-size:13px;color:var(--tm);line-height:1.6">한 마디로 프로필 전달, QR 스캔 즉시 연결</p></div>
+      </div>
+      <div class="row g16" style="align-items:flex-start">
+        <div style="width:42px;height:42px;border-radius:11px;background:var(--s1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--b)">⭐</div>
+        <div><p style="font-size:14px;font-weight:600;margin-bottom:4px">After — 평판이 자동으로 쌓임</p><p style="font-size:13px;color:var(--tm);line-height:1.6">키워드 클릭으로 신뢰 자산 누적</p></div>
+      </div>
+    </div>
+    <div style="padding:28px 20px 40px">
+      <button class="btn bg" onclick="go('s-onboard')" style="margin-bottom:12px">내 Byro 만들기</button>
+      <p style="font-size:12px;color:var(--td);text-align:center;cursor:pointer" onclick="setAuth(true)">이미 계정이 있어요 → 로그인</p>
+    </div>
+  </div>
+
+  <!-- 로그인 -->
+  <div id="home-user" class="scroll col" style="display:none">
+    <div style="padding:32px 20px 20px;text-align:center">
+      <p style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--tm);margin-bottom:16px;font-weight:500">Build Your Real Offline Identity</p>
+      <h1 class="serif" style="font-size:38px;line-height:1.2;margin-bottom:20px">말하지 않아도<br>증명되는 나</h1>
+      <div class="card" style="text-align:left;cursor:pointer;border-color:#333" onclick="go('s-myprofile')">
+        <div class="btw" style="margin-bottom:12px">
+          <div class="row g10">
+            <div class="av av36">강</div>
+            <div><p style="font-size:15px;font-weight:600">강민준</p><p style="font-size:12px;color:var(--tm)">byro.me/@gangjunmin</p></div>
+          </div>
+          <span style="font-size:18px;color:var(--tm)">›</span>
+        </div>
+        <div class="pbar" style="margin-bottom:6px"><div class="pfill" style="width:72%"></div></div>
+        <p style="font-size:11px;color:var(--tm)">프로필 완성도 72% · 탭해서 관리하기</p>
+      </div>
+    </div>
+    <div style="padding:0 20px" class="col g16">
+      <div class="row g16" style="align-items:flex-start"><div style="width:42px;height:42px;border-radius:11px;background:var(--s1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--b)">🔍</div><div><p style="font-size:14px;font-weight:600;margin-bottom:4px">Before</p><p style="font-size:13px;color:var(--tm);line-height:1.6">모임 전날 링크 하나로 경력·검증 정보 확인</p></div></div>
+      <div class="row g16" style="align-items:flex-start"><div style="width:42px;height:42px;border-radius:11px;background:var(--s1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--b)">💬</div><div><p style="font-size:14px;font-weight:600;margin-bottom:4px">During</p><p style="font-size:13px;color:var(--tm);line-height:1.6">한 마디로 프로필 전달</p></div></div>
+      <div class="row g16" style="align-items:flex-start"><div style="width:42px;height:42px;border-radius:11px;background:var(--s1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--b)">⭐</div><div><p style="font-size:14px;font-weight:600;margin-bottom:4px">After</p><p style="font-size:13px;color:var(--tm);line-height:1.6">키워드 클릭으로 신뢰 자산 누적</p></div></div>
+    </div>
+    <div style="padding:28px 20px 40px" class="col g12">
+      <button class="btn bg" onclick="go('s-myprofile')">내 프로필 관리하기</button>
+      <p style="font-size:12px;color:var(--td);text-align:center;cursor:pointer" onclick="go('s-profile')">이지민 프로필 미리보기 →</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ██████████████ P-01 공개 프로필 (이지민) ██████████████ -->
+<div class="screen" id="s-profile">
+  <nav class="nav">
+    <button class="ibtn" onclick="goBack()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+    <span class="nsp"></span>
+    <button class="btn-sm" onclick="toast('링크가 복사됐어요')">공유</button>
+  </nav>
+  <div class="scroll">
+    <!-- 중앙 정렬 헤더 -->
+    <div style="text-align:center;padding:28px 20px 20px">
+      <div class="av av72" style="margin:0 auto 14px">이</div>
+      <p style="font-size:22px;font-weight:700;margin-bottom:4px">이지민</p>
+      <p style="font-size:14px;color:var(--tm);margin-bottom:3px">스타트업 마케터 · 4년 경력</p>
+      <p style="font-size:13px;color:var(--td)">연세대학교 경영학과 졸업</p>
+    </div>
+
+    <div class="div" style="margin:0 20px"></div>
+
+    <!-- 자기소개 -->
+    <div style="padding:20px 20px 0">
+      <p style="font-size:12px;font-weight:600;color:var(--tm);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">자기소개</p>
+      <p style="font-size:14px;color:var(--ts);line-height:1.75">스타트업 생태계에서 브랜드와 사람을 연결하는 마케터입니다. 데이터 기반 캠페인과 커뮤니티 빌딩에 강점이 있고, 네트워킹을 통해 좋은 에너지를 주고받는 것을 즐깁니다.</p>
+    </div>
+
+    <!-- 시그널 -->
+    <div style="padding:20px">
+      <p style="font-size:12px;font-weight:600;color:var(--tm);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em">시그널</p>
+      <!-- Instagram -->
+      <div class="card" style="margin-bottom:10px">
+        <div class="btw" style="margin-bottom:12px">
+          <div class="row g10">
+            <div style="width:30px;height:30px;border-radius:7px;background:var(--ig);display:flex;align-items:center;justify-content:center;font-size:14px">📸</div>
+            <div><p style="font-size:13px;font-weight:600">Instagram</p><p style="font-size:11px;color:var(--tm)">instagram.com/jimin_lee</p></div>
+          </div>
+          <span class="pill-v">✓ 인증됨</span>
+        </div>
+        <div style="background:var(--s2);border-radius:8px;padding:12px;margin-bottom:12px">
+          <p style="font-size:11px;color:var(--tm);margin-bottom:5px;font-weight:600">AI 요약 정보</p>
+          <p style="font-size:12px;color:var(--ts);line-height:1.7">스타트업·마케팅 관련 콘텐츠를 주로 공유하며, 네트워킹 행사 참석이 잦습니다. 브랜드 협업과 커뮤니티 운영 경험을 꾸준히 기록하고 있습니다.</p>
+        </div>
+        <p style="font-size:11px;color:var(--td);margin-bottom:8px">최신 피드 3개</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px">
+          <div style="aspect-ratio:1;background:var(--s2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px">☕</div>
+          <div style="aspect-ratio:1;background:var(--s2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px">🎤</div>
+          <div style="aspect-ratio:1;background:var(--s2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px">🌿</div>
+        </div>
+      </div>
+      <!-- LinkedIn -->
+      <div class="card">
+        <div class="btw" style="margin-bottom:12px">
+          <div class="row g10">
+            <div style="width:30px;height:30px;border-radius:7px;background:#0A66C2;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff">in</div>
+            <div><p style="font-size:13px;font-weight:600">LinkedIn</p><p style="font-size:11px;color:var(--tm)">linkedin.com/in/jiminlee</p></div>
+          </div>
+          <span class="pill-v">✓ 인증됨</span>
+        </div>
+        <div style="background:var(--s2);border-radius:8px;padding:12px;margin-bottom:12px">
+          <p style="font-size:11px;color:var(--tm);margin-bottom:5px;font-weight:600">AI 요약 정보</p>
+          <p style="font-size:12px;color:var(--ts);line-height:1.7">Growth 마케팅과 브랜드 전략을 중심으로 활동하며, 스타트업 초기 단계 마케팅 구조 설계 경험이 풍부합니다. 최근에는 커뮤니티 기반 마케팅과 바이럴 캠페인 사례를 자주 공유하고 있습니다.</p>
+        </div>
+        <div style="background:var(--s2);border-radius:8px;padding:12px">
+          <p style="font-size:11px;color:var(--tm);margin-bottom:5px;font-weight:600">최근 피드</p>
+          <p style="font-size:12px;color:var(--ts);line-height:1.65">커뮤니티 기반 마케팅 실험기 — 유저 인터뷰 30건을 바탕으로 페르소나를 재정의하고 CAC를 40% 낮춘 과정을 공유합니다...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 검증 -->
+    <div style="padding:0 20px 20px">
+      <p style="font-size:12px;font-weight:600;color:var(--tm);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em">검증</p>
+      <!-- 커리어 지속성 -->
+      <div class="card" style="margin-bottom:10px">
+        <div class="btw" style="margin-bottom:8px">
+          <div class="row g10">
+            <div class="vic" style="width:32px;height:32px;border-radius:7px;font-size:15px">💼</div>
+            <p style="font-size:13px;font-weight:600">커리어 지속성</p>
+          </div>
+          <span class="pill-v">✓ 인증됨</span>
+        </div>
+        <p style="font-size:12px;color:var(--tm);margin-bottom:8px">건강보험 기준 재직 확인</p>
+        <p style="font-size:11px;color:var(--td);margin-bottom:5px">평균 재직 기간</p>
+        <div class="pbar" style="margin-bottom:5px"><div class="pfill-g pfill" style="width:65%"></div></div>
+        <p style="font-size:11px;color:var(--g);text-align:right">평균 대비 128% 장기 재직</p>
+      </div>
+      <!-- 리멤버 -->
+      <div class="card">
+        <div class="btw" style="margin-bottom:8px">
+          <div class="row g10">
+            <div class="vic" style="width:32px;height:32px;border-radius:7px;font-size:15px">🤝</div>
+            <p style="font-size:13px;font-weight:600">리멤버 직업 네트워크</p>
+          </div>
+          <span class="pill-v">✓ 인증됨</span>
+        </div>
+        <p style="font-size:12px;color:var(--tm);margin-bottom:12px">스타트업·마케팅 중심의 인맥 구조</p>
+        <div style="background:var(--s2);border-radius:8px;padding:16px">
+          <div class="net-graph">
+            <div class="net-node-center">나</div>
+            <div class="net-label" style="top:4px;left:50%;transform:translateX(-50%)">스타트업 38%</div>
+            <div class="net-label" style="top:50%;right:0;transform:translateY(-50%)">IT 22%</div>
+            <div class="net-label" style="bottom:4px;left:50%;transform:translateX(-50%)">투자 16%</div>
+            <div class="net-label" style="top:50%;left:0;transform:translateY(-50%)">마케팅 24%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 평판 -->
+    <div style="padding:0 20px 20px">
+      <div class="sech"><span class="sect">받은 평판</span><span style="font-size:12px;color:var(--tm)">총 11회</span></div>
+      <div class="bubs">
+        <span class="bub-lg">전문적인 <span style="font-size:12px;color:var(--td)"> 5</span></span>
+        <span class="bub-md">신뢰할 수 있는 <span style="font-size:11px;color:var(--td)"> 4</span></span>
+        <span class="bub-sm">통찰력 있는 <span style="font-size:11px;color:var(--td)"> 2</span></span>
+      </div>
+    </div>
+
+    <!-- 방명록 -->
+    <div style="padding:0 20px 80px">
+      <div class="sech"><span class="sect">방명록</span><button class="btn-sm">더보기</button></div>
+      <div class="col g8">
+        <div class="gentry" onclick="toast('강민준 님의 프로필로 이동')">
+          <div class="av av36">강</div>
+          <div style="flex:1"><div class="btw" style="margin-bottom:4px"><span style="font-size:13px;font-weight:600">강민준</span><span style="font-size:11px;color:var(--td)">2일 전</span></div><p style="font-size:13px;color:var(--ts);line-height:1.55">정말 통찰력 있는 분이에요. 다음에도 뵙고 싶습니다!</p></div>
+        </div>
+        <div class="gentry" onclick="toast('박서연 님의 프로필로 이동')">
+          <div class="av av36">박</div>
+          <div style="flex:1"><div class="btw" style="margin-bottom:4px"><span style="font-size:13px;font-weight:600">박서연</span><span style="font-size:11px;color:var(--td)">5일 전</span></div><p style="font-size:13px;color:var(--ts);line-height:1.55">대화가 정말 편하고 에너지가 넘치는 분이에요</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fcta" style="display:flex;gap:8px">
+    <button class="btn bg" style="height:44px;font-size:13px" onclick="toast('경험 피드백 요청 링크가 복사됐어요')">경험 피드백 요청</button>
+    <button class="btn bw" style="height:44px;font-size:13px" onclick="openRepModal()">+경험 남기기</button>
+  </div>
+</div>
+
+
+<!-- ██████████████ P-03 내 프로필 ██████████████ -->
+<div class="screen" id="s-myprofile">
+  <nav class="nav line">
+    <button class="ibtn" onclick="goBack()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+    <span class="ntitle">내 프로필</span>
+    <span class="nsp"></span>
+    <button class="tbtn" style="margin-right:8px;font-size:13px;color:var(--tm)" onclick="go('s-profile')">공개 보기</button>
+    <button class="tbtn" style="font-size:13px" onclick="go('s-edit')">편집</button>
+  </nav>
+  <div class="scroll">
+    <!-- 완성도 -->
+    <div style="padding:16px 20px 0">
+      <div class="card csm">
+        <div class="btw" style="margin-bottom:8px">
+          <p style="font-size:13px;font-weight:600">프로필 완성도</p>
+          <p style="font-size:13px;font-weight:700">72%</p>
+        </div>
+        <div class="pbar" style="margin-bottom:8px"><div class="pfill" style="width:72%"></div></div>
+        <div class="row" style="gap:8px;flex-wrap:wrap">
+          <span style="font-size:11px;color:var(--g)">✓ 이름</span>
+          <span style="font-size:11px;color:var(--g)">✓ 자기소개</span>
+          <span style="font-size:11px;color:var(--g)">✓ Instagram</span>
+          <span style="font-size:11px;color:var(--tm)">· LinkedIn 미연동</span>
+          <span style="font-size:11px;color:var(--tm)">· 검증 0개</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 링크 + 아카이브 -->
+    <div style="padding:14px 20px 0;display:flex;gap:8px">
+      <div class="lbox" style="flex:1"><span class="lurl">byro.me/@gangjunmin</span><button class="btn-sm" onclick="toast('링크가 복사됐어요')">복사</button></div>
+      <button class="btn-sm" style="display:flex;align-items:center;gap:5px;padding:0 12px;height:44px" onclick="go('s-archive')">🔖 아카이브</button>
+    </div>
+
+    <!-- 헤더 -->
+    <div style="text-align:center;padding:24px 20px 20px">
+      <div style="position:relative;display:inline-block">
+        <div class="av av72" style="margin:0 auto">강</div>
+        <div style="position:absolute;bottom:2px;right:2px;width:22px;height:22px;background:var(--s1);border:1px solid var(--b);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer">📷</div>
+      </div>
+      <p style="font-size:21px;font-weight:700;margin-top:12px;margin-bottom:4px">강민준</p>
+      <p style="font-size:13px;color:var(--tm);margin-bottom:3px">Byth · Product Owner · 5년 경력</p>
+      <p style="font-size:12px;color:var(--td)">MIT 공과대학교 기계공학과 졸업</p>
+    </div>
+
+    <div class="div" style="margin:0 20px"></div>
+
+    <!-- 자기소개 -->
+    <div style="padding:20px 20px 0">
+      <div class="sech">
+        <p style="font-size:12px;font-weight:600;color:var(--tm);text-transform:uppercase;letter-spacing:.06em">자기소개</p>
+        <button class="btn-sm" onclick="go('s-edit')">✏️</button>
+      </div>
+      <p style="font-size:14px;color:var(--ts);line-height:1.75">창업 3년차. 사람을 만나고 연결하는 걸 좋아합니다. Series A 준비 중.</p>
+    </div>
+
+    <!-- 시그널 -->
+    <div style="padding:20px 20px 0">
+      <div class="sech">
+        <p style="font-size:12px;font-weight:600;color:var(--tm);text-transform:uppercase;letter-spacing:.06em">시그널</p>
+        <button class="btn-sm" onclick="go('s-edit')">⚙️ 관리</button>
+      </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="btw" style="margin-bottom:10px">
+          <div class="row g10">
+            <div style="width:28px;height:28px;border-radius:6px;background:var(--ig);display:flex;align-items:center;justify-content:center;font-size:12px">📸</div>
+            <p style="font-size:13px;font-weight:600">Instagram</p>
+          </div>
+          <span style="font-size:11px;color:var(--g)">연동됨 ✓</span>
+        </div>
+        <p style="font-size:12px;color:var(--tm);font-style:italic;line-height:1.6">AI 요약: 스타트업 씬에서 활발히 활동 중. 네트워킹·파트너십 콘텐츠 다수.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:10px">
+          <div style="aspect-ratio:1;background:var(--s2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px">☕</div>
+          <div style="aspect-ratio:1;background:var(--s2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px">🎤</div>
+          <div style="aspect-ratio:1;background:var(--s2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px">🌿</div>
+        </div>
+      </div>
+      <div class="card" style="border-style:dashed;opacity:.7">
+        <div class="row" style="gap:10px">
+          <div style="width:28px;height:28px;border-radius:6px;background:#0A66C2;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff">in</div>
+          <div style="flex:1"><p style="font-size:13px;font-weight:600">LinkedIn</p><p style="font-size:11px;color:var(--tm)">연동하면 AI 요약이 생성돼요</p></div>
+          <button class="btn-sm" onclick="toast('LinkedIn 연동 준비 중')">연동하기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 검증 -->
+    <div style="padding:20px 20px 0">
+      <div class="sech">
+        <p style="font-size:12px;font-weight:600;color:var(--tm);text-transform:uppercase;letter-spacing:.06em">검증</p>
+        <button class="btn-sm" onclick="go('s-verify')">⚙️ 관리</button>
+      </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="btw" style="margin-bottom:8px">
+          <div class="row g10">
+            <div class="vic" style="width:30px;height:30px;border-radius:7px;font-size:14px">💼</div>
+            <p style="font-size:13px;font-weight:600">커리어 지속성</p>
+          </div>
+          <span class="pill-v">✓ 인증됨</span>
+        </div>
+        <div class="pbar" style="margin-bottom:5px"><div class="pfill-g pfill" style="width:65%"></div></div>
+        <p style="font-size:11px;color:var(--g);text-align:right">평균 대비 128% 장기 재직</p>
+      </div>
+      <div class="card" style="opacity:.6;cursor:pointer" onclick="go('s-verify')">
+        <div class="btw">
+          <div class="row g10">
+            <div class="vic" style="width:30px;height:30px;border-radius:7px;font-size:14px">🤝</div>
+            <div><p style="font-size:13px;font-weight:600">리멤버 직업 네트워크</p><p style="font-size:11px;color:var(--tm);margin-top:2px">연동하면 네트워크 구조가 시각화돼요</p></div>
+          </div>
+          <span class="pill-n">미인증</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 경험 -->
+    <div style="padding:20px 20px 0">
+      <div class="sech">
+        <p style="font-size:12px;font-weight:600;color:var(--tm);text-transform:uppercase;letter-spacing:.06em">경험</p>
+        <button class="btn-sm" onclick="go('s-exp-add')">+ 추가</button>
+      </div>
+      <div class="col g8">
+        <div class="exp-row">
+          <div class="vic" style="width:32px;height:32px;font-size:15px">🎤</div>
+          <div><p style="font-size:13px;font-weight:600">강연 / 연설</p><p style="font-size:11px;color:var(--tm);margin-top:2px">TEDx Seoul · 2023</p></div>
+        </div>
+        <div class="exp-row">
+          <div class="vic" style="width:32px;height:32px;font-size:15px">🌏</div>
+          <div><p style="font-size:13px;font-weight:600">해외 협업 프로젝트</p><p style="font-size:11px;color:var(--tm);margin-top:2px">일본 파트너사 · 6개월</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 평판 -->
+    <div style="padding:20px 20px 0">
+      <div class="sech"><span class="sect">평판 키워드</span><span style="font-size:12px;color:var(--tm)">총 18회</span></div>
+      <div class="bubs">
+        <span class="bub-lg">전문적인 <span style="font-size:12px;color:var(--td)"> 8</span></span>
+        <span class="bub-md">신뢰할 수 있는 <span style="font-size:11px;color:var(--td)"> 6</span></span>
+        <span class="bub-sm">통찰력 있는 <span style="font-size:11px;color:var(--td)"> 4</span></span>
+      </div>
+    </div>
+
+    <!-- 방명록 -->
+    <div style="padding:20px 20px 40px">
+      <div class="sech"><span class="sect">방명록</span><button class="btn-sm">전체 보기</button></div>
+      <div class="col g8">
+        <div class="gentry" onclick="go('s-profile')">
+          <div class="av av36">이</div>
+          <div style="flex:1"><div class="btw" style="margin-bottom:4px"><span style="font-size:13px;font-weight:600">이지민</span><span style="font-size:11px;color:var(--td)">3일 전</span></div><p style="font-size:13px;color:var(--ts);line-height:1.55">네트워킹 행사에서 만났는데 정말 인사이트 넘치는 분이었어요.</p></div>
+          <span style="color:var(--td);font-size:14px">›</span>
+        </div>
+        <div class="gentry" onclick="toast('박서연 님의 프로필로 이동')">
+          <div class="av av36">박</div>
+          <div style="flex:1"><div class="btw" style="margin-bottom:4px"><span style="font-size:13px;font-weight:600">박서연</span><span style="font-size:11px;color:var(--td)">1주 전</span></div><p style="font-size:13px;color:var(--ts);line-height:1.55">실행력이 정말 대단하신 분.</p></div>
+          <span style="color:var(--td);font-size:14px">›</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ██████████████ P-04 프로필 편집 ██████████████ -->
+<div class="screen" id="s-edit">
+  <nav class="nav line">
+    <button class="ibtn" onclick="goBack()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+    <span class="ntitle">프로필 편집</span>
+    <span class="nsp"></span>
+    <button class="tbtn" onclick="toast('저장됐어요');goBack()">저장</button>
+  </nav>
+  <div class="scroll" style="padding:20px">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="position:relative;display:inline-block"><div class="av av72" style="margin:0 auto">강</div><div style="position:absolute;bottom:0;right:0;width:24px;height:24px;background:var(--s1);border:1px solid var(--b);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer">📷</div></div>
+      <p style="font-size:12px;color:var(--tm);margin-top:8px;cursor:pointer">사진 변경</p>
+    </div>
+    <div class="col g16">
+      <div class="col g6"><label style="font-size:12px;color:var(--tm)">이름 <span style="color:var(--td);font-size:11px">✓ 인증됨</span></label><input class="inp" value="강민준" readonly style="opacity:.6;cursor:not-allowed"></div>
+      <div class="col g6"><label style="font-size:12px;color:var(--tm)">직함 / 소속</label><input class="inp" value="Byth · Product Owner"></div>
+      <div class="col g6">
+        <div class="btw" style="margin-bottom:8px"><label style="font-size:12px;color:var(--tm)">한줄 자기소개</label><button class="btn-sm" onclick="aiFill()">✨ AI로 채우기</button></div>
+        <textarea class="inp ta" id="bio-ta">창업 3년차. 사람을 만나고 연결하는 걸 좋아합니다. Series A 준비 중.</textarea>
+      </div>
+      <div class="col g6"><label style="font-size:12px;color:var(--tm)">평판 키워드 <span style="color:var(--td);font-size:11px">방문자가 선택할 키워드</span></label>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px" id="kw-pool">
+          <span class="tag on" onclick="toggleTag(this)">전문적인</span>
+          <span class="tag on" onclick="toggleTag(this)">신뢰할 수 있는</span>
+          <span class="tag on" onclick="toggleTag(this)">통찰력 있는</span>
+          <span class="tag" onclick="toggleTag(this)">실행력 있는</span>
+          <span class="tag" onclick="toggleTag(this)">유쾌한</span>
+          <span class="tag" onclick="toggleTag(this)">진정성 있는</span>
+          <span class="tag" onclick="toggleTag(this)">꼼꼼한</span>
+        </div>
+      </div>
+      <div class="col g6"><label style="font-size:12px;color:var(--tm)">SNS 연동</label>
+        <div class="card csm" style="margin-top:6px;padding:0">
+          <div class="btw" style="padding:12px 14px"><div class="row g8"><div style="width:26px;height:26px;border-radius:6px;background:var(--ig);display:flex;align-items:center;justify-content:center;font-size:12px">📸</div><span style="font-size:13px">Instagram</span></div><span style="font-size:12px;color:var(--g)">연동됨 ✓</span></div>
+          <div class="div"></div>
+          <div class="btw" style="padding:12px 14px"><div class="row g8"><div style="width:26px;height:26px;border-radius:6px;background:#0A66C2;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff">in</div><span style="font-size:13px">LinkedIn</span></div><button class="btn-sm" onclick="toast('LinkedIn 연동 준비 중')">연동하기</button></div>
+        </div>
+      </div>
+    </div>
+    <div style="height:32px"></div>
+  </div>
+</div>
+
+
+<!-- ██████████████ P-05 검증 설정 ██████████████ -->
+<div class="screen" id="s-verify">
+  <nav class="nav line">
+    <button class="ibtn" onclick="goBack()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+    <span class="ntitle">검증 항목 관리</span>
+  </nav>
+  <div class="scroll" style="padding:16px 20px">
+    <div class="card csm" style="margin-bottom:16px"><p style="font-size:13px;color:var(--ts);line-height:1.6">✅ Verified — API로 자동 검증되는 항목</p></div>
+    <div class="col g8" style="margin-bottom:24px">
+      <div class="vrow" style="cursor:default"><div class="vic">📱</div><div style="flex:1"><p style="font-size:14px;font-weight:600">통신 일관성</p><p style="font-size:12px;color:var(--tm);margin-top:2px">PASS 본인인증 연동</p></div><span class="pill-v">✓ 인증됨</span></div>
+      <div class="vrow" style="cursor:default"><div class="vic">💼</div><div style="flex:1"><p style="font-size:14px;font-weight:600">커리어 지속성</p><p style="font-size:12px;color:var(--tm);margin-top:2px">건강보험 재직 확인</p></div><span class="pill-v">✓ 인증됨</span></div>
+      <div class="vrow" onclick="toast('리멤버 연동 준비 중')"><div class="vic">🤝</div><div style="flex:1"><p style="font-size:14px;font-weight:600">리멤버 직업 네트워크</p><p style="font-size:12px;color:var(--tm);margin-top:2px">리멤버 계정 연동</p></div><span class="pill-n">미인증</span></div>
+      <div class="vrow" onclick="toast('사업자등록 연동 준비 중')"><div class="vic">🏢</div><div style="flex:1"><p style="font-size:14px;font-weight:600">사업자등록 현황</p><p style="font-size:12px;color:var(--tm);margin-top:2px">국세청 공개 API</p></div><span class="pill-n">미인증</span></div>
+    </div>
+
+    <div class="card csm" style="margin-bottom:16px"><p style="font-size:13px;color:var(--ts);line-height:1.6">🏷️ 경험 — 직접 입력 항목 (배지 없음)</p></div>
+    <div class="col g8">
+      <div class="exp-row">
+        <div class="vic" style="width:32px;height:32px;font-size:15px">🎤</div>
+        <div style="flex:1"><p style="font-size:13px;font-weight:600">강연 / 연설</p><p style="font-size:11px;color:var(--tm);margin-top:2px">TEDx Seoul · 2023</p></div>
+        <button class="btn-sm" onclick="toast('삭제됐어요')">삭제</button>
+      </div>
+      <div class="exp-row">
+        <div class="vic" style="width:32px;height:32px;font-size:15px">🌏</div>
+        <div style="flex:1"><p style="font-size:13px;font-weight:600">해외 협업 프로젝트</p><p style="font-size:11px;color:var(--tm);margin-top:2px">일본 파트너사 · 6개월</p></div>
+        <button class="btn-sm" onclick="toast('삭제됐어요')">삭제</button>
+      </div>
+      <button class="btn bg" style="height:44px;font-size:13px" onclick="go('s-exp-add')">+ 경험 추가하기</button>
+    </div>
+    <div style="height:24px"></div>
+  </div>
+</div>
+
+
+<!-- ██████████████ P-07 아카이브 ██████████████ -->
+<div class="screen" id="s-archive">
+  <nav class="nav line">
+    <button class="ibtn" onclick="goBack()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+    <span class="ntitle">아카이브</span>
+  </nav>
+  <div class="tabs">
+    <button class="tab on" id="arc-tab-s" onclick="switchArc('s')">🔖 저장한 프로필 <span style="color:var(--tm)">3</span></button>
+    <button class="tab" id="arc-tab-r" onclick="switchArc('r')">🕐 최근 본 프로필</button>
+  </div>
+  <!-- 저장 탭 -->
+  <div id="arc-saved" class="scroll" style="padding:16px 20px">
+    <div class="col g10">
+      <div class="card csm">
+        <div class="row g12 mb10" style="cursor:pointer" onclick="go('s-profile')">
+          <div class="av av36">이</div>
+          <div style="flex:1"><p style="font-size:14px;font-weight:600">이지민</p><p style="font-size:12px;color:var(--tm);margin-top:2px">스타트업 마케터 · 3일 전</p></div>
+          <button class="ibtn" onclick="event.stopPropagation();toast('저장 해제됐어요')"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></button>
+        </div>
+        <textarea class="inp ta" placeholder="메모 (나만 볼 수 있어요)" style="height:60px">비즈니스 살롱 2026.03. 마케팅 인사이트 좋음</textarea>
+        <p style="font-size:11px;color:var(--td);margin-top:5px">메모 · 나만 볼 수 있어요</p>
+      </div>
+      <div class="card csm">
+        <div class="row g12 mb10" style="cursor:pointer" onclick="toast('박서연 프로필로 이동')">
+          <div class="av av36">박</div>
+          <div style="flex:1"><p style="font-size:14px;font-weight:600">박서연</p><p style="font-size:12px;color:var(--tm);margin-top:2px">콘텐츠 크리에이터 · 1주 전</p></div>
+          <button class="ibtn" onclick="event.stopPropagation();toast('저장 해제됐어요')"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></button>
+        </div>
+        <textarea class="inp ta" placeholder="메모 (나만 볼 수 있어요)" style="height:60px"></textarea>
+        <p style="font-size:11px;color:var(--td);margin-top:5px">메모 · 나만 볼 수 있어요</p>
+      </div>
+      <div class="card csm">
+        <div class="row g12 mb10" style="cursor:pointer" onclick="toast('김도현 프로필로 이동')">
+          <div class="av av36">김</div>
+          <div style="flex:1"><p style="font-size:14px;font-weight:600">김도현</p><p style="font-size:12px;color:var(--tm);margin-top:2px">독립 재무설계사 · 2주 전</p></div>
+          <button class="ibtn" onclick="event.stopPropagation();toast('저장 해제됐어요')"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg></button>
+        </div>
+        <textarea class="inp ta" placeholder="메모 (나만 볼 수 있어요)" style="height:60px"></textarea>
+        <p style="font-size:11px;color:var(--td);margin-top:5px">메모 · 나만 볼 수 있어요</p>
+      </div>
+    </div>
+    <div style="height:24px"></div>
+  </div>
+  <!-- 최근 탭 -->
+  <div id="arc-recent" class="scroll" style="padding:16px 20px;display:none">
+    <div class="col g8">
+      <div class="card csm row g12" style="cursor:pointer" onclick="go('s-profile')">
+        <div class="av av36">이</div>
+        <div style="flex:1"><p style="font-size:14px;font-weight:600">이지민</p><p style="font-size:12px;color:var(--tm);margin-top:2px">스타트업 마케터</p></div>
+        <span style="font-size:12px;color:var(--td)">방금 전</span>
+      </div>
+      <div class="card csm row g12" style="cursor:pointer" onclick="toast('박서연 프로필로 이동')">
+        <div class="av av36">박</div>
+        <div style="flex:1"><p style="font-size:14px;font-weight:600">박서연</p><p style="font-size:12px;color:var(--tm);margin-top:2px">콘텐츠 크리에이터</p></div>
+        <span style="font-size:12px;color:var(--td)">1시간 전</span>
+      </div>
+      <div class="card csm row g12" style="cursor:pointer" onclick="toast('최지원 프로필로 이동')">
+        <div class="av av36">최</div>
+        <div style="flex:1"><p style="font-size:14px;font-weight:600">최지원</p><p style="font-size:12px;color:var(--tm);margin-top:2px">VC 심사역</p></div>
+        <span style="font-size:12px;color:var(--td)">3시간 전</span>
+      </div>
+    </div>
+    <div style="height:24px"></div>
+  </div>
+</div>
+
+
+<!-- ██████████████ 경험 추가하기 ██████████████ -->
+<div class="screen" id="s-exp-add">
+  <nav class="nav line">
+    <button class="ibtn" onclick="goBack()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+    <span class="ntitle">경험 추가하기</span>
+    <span class="nsp"></span>
+    <button class="tbtn" onclick="toast('경험이 추가됐어요');goBack()">저장</button>
+  </nav>
+  <div class="scroll" style="padding:20px">
+    <p style="font-size:13px;color:var(--tm);line-height:1.7;margin-bottom:20px">강연, 협업, 수상 등 주요 경험을 등록해요.<br>프로필에 리스트 형태로 표시됩니다.</p>
+    <p style="font-size:12px;color:var(--tm);margin-bottom:10px;font-weight:500">카테고리</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px" id="cat-grid">
+      <div onclick="selectCat(this,'🎤','강연 / 연설')" style="padding:14px;border:2px solid #F5F5F5;border-radius:var(--r);background:rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;cursor:pointer">
+        <span style="font-size:20px">🎤</span><p style="font-size:13px;font-weight:600">강연 / 연설</p>
+      </div>
+      <div onclick="selectCat(this,'🤝','프로젝트 / 협업')" style="padding:14px;border:1px solid var(--b);border-radius:var(--r);background:var(--s1);display:flex;align-items:center;gap:10px;cursor:pointer">
+        <span style="font-size:20px">🤝</span><p style="font-size:13px;color:var(--tm)">프로젝트 / 협업</p>
+      </div>
+      <div onclick="selectCat(this,'🏆','수상 / 선정')" style="padding:14px;border:1px solid var(--b);border-radius:var(--r);background:var(--s1);display:flex;align-items:center;gap:10px;cursor:pointer">
+        <span style="font-size:20px">🏆</span><p style="font-size:13px;color:var(--tm)">수상 / 선정</p>
+      </div>
+      <div onclick="selectCat(this,'📚','책 출판')" style="padding:14px;border:1px solid var(--b);border-radius:var(--r);background:var(--s1);display:flex;align-items:center;gap:10px;cursor:pointer">
+        <span style="font-size:20px">📚</span><p style="font-size:13px;color:var(--tm)">책 출판</p>
+      </div>
+      <div onclick="selectCat(this,'🌏','해외 활동')" style="padding:14px;border:1px solid var(--b);border-radius:var(--r);background:var(--s1);display:flex;align-items:center;gap:10px;cursor:pointer">
+        <span style="font-size:20px">🌏</span><p style="font-size:13px;color:var(--tm)">해외 활동</p>
+      </div>
+      <div onclick="selectCat(this,'✏️','직접 입력')" style="padding:14px;border:1px dashed var(--b);border-radius:var(--r);display:flex;align-items:center;gap:10px;cursor:pointer">
+        <span style="font-size:20px;color:var(--td)">+</span><p style="font-size:13px;color:var(--td)">직접 입력</p>
+      </div>
+    </div>
+    <div class="div" style="margin-bottom:20px"></div>
+    <div class="col g14" style="gap:14px">
+      <div class="col g6"><label style="font-size:12px;color:var(--tm)">제목 *</label><input class="inp" id="exp-title" placeholder="예: TEDx Seoul 발표" style="margin-top:6px"></div>
+      <div class="col g6"><label style="font-size:12px;color:var(--tm)">부연 설명 (선택)</label><input class="inp" id="exp-sub" placeholder="예: 기술과 사람의 연결에 대해" style="margin-top:6px"></div>
+      <div class="col g6"><label style="font-size:12px;color:var(--tm)">연도 (선택)</label><input class="inp" id="exp-year" placeholder="2023" type="number" style="margin-top:6px"></div>
+    </div>
+
+    <!-- 미리보기 -->
+    <div class="div" style="margin:20px 0"></div>
+    <p style="font-size:12px;color:var(--tm);margin-bottom:10px;font-weight:500">프로필 미리보기</p>
+    <div class="exp-row" id="exp-preview">
+      <div class="vic" id="prev-icon" style="font-size:18px">🎤</div>
+      <div>
+        <p style="font-size:14px;font-weight:600" id="prev-title">강연 / 연설</p>
+        <p style="font-size:12px;color:var(--tm);margin-top:2px" id="prev-sub">카테고리를 선택하고 제목을 입력해보세요</p>
+      </div>
+    </div>
+    <div style="height:32px"></div>
+  </div>
+</div>
+
+
+<!-- ██████████████ P-06 온보딩 ██████████████ -->
+<div class="screen" id="s-onboard">
+  <nav class="nav" style="justify-content:space-between">
+    <button class="ibtn" id="ob-back" style="visibility:hidden" onclick="obPrev()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+    <div class="sdots" id="ob-dots"></div>
+    <button class="tbtn" style="color:var(--td);font-size:13px;font-weight:400" onclick="goBack()">닫기</button>
+  </nav>
+
+  <!-- Step 1: 소셜 로그인 -->
+  <div id="ob1" class="ob-step">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px">
+      <p class="serif" style="font-size:52px;letter-spacing:-.02em">Byro</p>
+      <h2 style="font-size:26px;font-weight:700;line-height:1.3">신뢰로 연결되는<br>나의 정체성</h2>
+      <p style="font-size:14px;color:var(--tm);line-height:1.65">3분이면 프로필을 만들 수 있어요</p>
+    </div>
+    <div class="col g10">
+      <button class="btn bk" onclick="obNext()"><span style="font-size:18px">💬</span> 카카오로 시작하기</button>
+      <button class="btn bgg" onclick="obNext()"><span style="font-weight:700;font-size:15px">G</span> 구글로 시작하기</button>
+      <button class="btn bn" onclick="obNext()"><span style="font-weight:700;font-size:15px">N</span> 네이버로 시작하기</button>
+      <p style="font-size:11px;color:var(--td);text-align:center;margin-top:2px">시작하면 이용약관 및 개인정보 처리방침에 동의하게 됩니다</p>
+    </div>
+  </div>
+
+  <!-- Step 2: 본인인증 -->
+  <div id="ob2" class="ob-step" style="display:none">
+    <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">본인 확인이 필요해요</h2>
+    <p style="font-size:14px;color:var(--tm);line-height:1.65;margin-bottom:28px">이름은 본인인증을 통해 확인됩니다.<br>인증 후 수정이 불가능해요.</p>
+    <div class="col g8" style="flex:1">
+      <div class="vrow" onclick="obNext()"><div class="vic">📱</div><div style="flex:1"><p style="font-size:14px;font-weight:600">통신사 PASS</p><p style="font-size:12px;color:var(--tm);margin-top:2px">SKT · KT · LG U+</p></div><span style="color:var(--tm)">›</span></div>
+      <div class="vrow" onclick="obNext()"><div class="vic">💬</div><div style="flex:1"><p style="font-size:14px;font-weight:600">SMS 인증</p><p style="font-size:12px;color:var(--tm);margin-top:2px">휴대폰 문자 인증</p></div><span style="color:var(--tm)">›</span></div>
+      <div class="vrow" onclick="obNext()"><div class="vic" style="background:#FEE500">💛</div><div style="flex:1"><p style="font-size:14px;font-weight:600">카카오 / 토스</p><p style="font-size:12px;color:var(--tm);margin-top:2px">전자서명 인증</p></div><span style="color:var(--tm)">›</span></div>
+      <div class="vrow" onclick="obNext()"><div class="vic">🪪</div><div style="flex:1"><p style="font-size:14px;font-weight:600">모바일 신분증</p><p style="font-size:12px;color:var(--tm);margin-top:2px">주민등록증 · 운전면허증</p></div><span style="color:var(--tm)">›</span></div>
+    </div>
+    <div class="card csm" style="margin-top:16px"><p style="font-size:12px;color:var(--tm);line-height:1.65">🔒 인증된 이름은 프로필에 실명으로 표시됩니다.</p></div>
+  </div>
+
+  <!-- Step 3: 링크 ID -->
+  <div id="ob3" class="ob-step" style="display:none">
+    <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">나만의 Byro 링크를<br>만들어보세요</h2>
+    <p style="font-size:14px;color:var(--tm);line-height:1.65;margin-bottom:24px">한 번 설정하면 변경이 어렵습니다.</p>
+    <div class="col g8" style="flex:1">
+      <div style="display:flex;border:1px solid #555;border-radius:10px;overflow:hidden;background:var(--s1)">
+        <span style="padding:0 14px;font-size:13px;color:var(--tm);background:var(--s2);display:flex;align-items:center;white-space:nowrap;border-right:1px solid var(--b)">byro.me/@</span>
+        <input class="inp" style="border:none;border-radius:0;background:transparent;height:50px" value="gangjunmin" id="link-id">
+      </div>
+      <div class="row g6"><span style="font-size:14px;color:var(--g)">✓</span><p style="font-size:13px;color:var(--g)">사용 가능한 ID예요</p></div>
+      <div class="card csm"><p style="font-size:12px;color:var(--tm);line-height:1.65">· 영문 소문자, 숫자, 밑줄(_) · 4~20자</p></div>
+    </div>
+    <button class="btn bw" style="margin-top:16px" onclick="obNext()">다음</button>
+  </div>
+
+  <!-- Step 4: 키워드 -->
+  <div id="ob4" class="ob-step" style="display:none">
+    <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">나를 표현하는<br>키워드를 골라보세요</h2>
+    <p style="font-size:14px;color:var(--tm);line-height:1.65;margin-bottom:6px">방문자가 평가할 때 사용할 키워드예요 (최대 10개)</p>
+    <p style="font-size:12px;color:var(--td);margin-bottom:20px">✨ 나중에 AI 자기소개 생성에도 활용돼요</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;flex:1;align-content:flex-start" id="ob-kw">
+      <span class="tag on" onclick="toggleTag(this)">전문적인</span>
+      <span class="tag on" onclick="toggleTag(this)">신뢰할 수 있는</span>
+      <span class="tag on" onclick="toggleTag(this)">통찰력 있는</span>
+      <span class="tag" onclick="toggleTag(this)">실행력 있는</span>
+      <span class="tag" onclick="toggleTag(this)">네트워킹 능숙</span>
+      <span class="tag" onclick="toggleTag(this)">유쾌한</span>
+      <span class="tag" onclick="toggleTag(this)">진정성 있는</span>
+      <span class="tag" onclick="toggleTag(this)">꼼꼼한</span>
+      <span class="tag" onclick="toggleTag(this)">따뜻한</span>
+      <span class="tag" onclick="toggleTag(this)">추진력 있는</span>
+    </div>
+    <div class="col g10" style="margin-top:16px">
+      <button class="btn bw" onclick="obNext()">다음</button>
+      <button class="btn bg" style="height:44px;font-size:14px" onclick="obNext()">건너뛰기</button>
+    </div>
+  </div>
+
+  <!-- Step 5: SNS 연동 -->
+  <div id="ob5" class="ob-step" style="display:none">
+    <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">SNS를 연동하면<br>더 풍부한 프로필이 돼요</h2>
+    <p style="font-size:14px;color:var(--tm);line-height:1.65;margin-bottom:6px">AI가 SNS를 분석해 자기소개를 자동으로 작성해줘요.</p>
+    <p style="font-size:12px;color:var(--td);margin-bottom:20px">✨ SNS 정보가 많을수록 AI 자기소개 품질이 높아져요</p>
+    <div class="col g8" style="flex:1">
+      <div class="vrow" onclick="toast('Instagram 연동 완료!')"><div style="width:38px;height:38px;border-radius:9px;background:var(--ig);display:flex;align-items:center;justify-content:center;font-size:18px">📸</div><div style="flex:1"><p style="font-size:14px;font-weight:600">Instagram</p><p style="font-size:12px;color:var(--tm);margin-top:2px">최신 피드 · 팔로워 요약 분석</p></div><button class="btn-sm" onclick="event.stopPropagation();toast('Instagram 연동됐어요')">연동하기</button></div>
+      <div class="vrow" onclick="toast('LinkedIn 연동 준비 중')"><div style="width:38px;height:38px;border-radius:9px;background:#0A66C2;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff">in</div><div style="flex:1"><p style="font-size:14px;font-weight:600">LinkedIn</p><p style="font-size:12px;color:var(--tm);margin-top:2px">직업 경력 · 활동 요약 분석</p></div><button class="btn-sm" onclick="event.stopPropagation();toast('LinkedIn 연동 준비 중')">연동하기</button></div>
+    </div>
+    <div class="col g10" style="margin-top:16px">
+      <button class="btn bw" onclick="obNext()">다음</button>
+      <button class="btn bg" style="height:44px;font-size:14px" onclick="obNext()">건너뛰기</button>
+    </div>
+  </div>
+
+  <!-- Step 6: 검증 & 경험 -->
+  <div id="ob6" class="ob-step" style="display:none">
+    <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">신뢰를 쌓는<br>검증 항목을 추가해요</h2>
+    <p style="font-size:14px;color:var(--tm);line-height:1.65;margin-bottom:6px">나중에 언제든 설정할 수 있어요.</p>
+    <p style="font-size:12px;color:var(--td);margin-bottom:20px">✨ 검증 정보도 AI 자기소개 생성에 활용돼요</p>
+    <p style="font-size:11px;font-weight:600;color:var(--td);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">✅ Verified</p>
+    <div class="col g8" style="margin-bottom:16px;flex:1;align-content:flex-start">
+      <div class="vrow" onclick="toast('인증 연동 준비 중')"><div class="vic">📱</div><div style="flex:1"><p style="font-size:13px;font-weight:600">통신 일관성</p></div><button class="btn-sm" onclick="event.stopPropagation();toast('인증 준비 중')">인증하기</button></div>
+      <div class="vrow" onclick="toast('건강보험 연동 준비 중')"><div class="vic">💼</div><div style="flex:1"><p style="font-size:13px;font-weight:600">커리어 지속성</p></div><button class="btn-sm" onclick="event.stopPropagation();toast('인증 준비 중')">인증하기</button></div>
+      <div class="vrow" onclick="toast('리멤버 연동 준비 중')"><div class="vic">🤝</div><div style="flex:1"><p style="font-size:13px;font-weight:600">리멤버 직업 네트워크</p></div><button class="btn-sm" onclick="event.stopPropagation();toast('인증 준비 중')">인증하기</button></div>
+    </div>
+    <p style="font-size:11px;font-weight:600;color:var(--td);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">🏷️ 경험</p>
+    <div style="display:flex;gap:10px;align-items:center;padding:14px;background:var(--s1);border-radius:var(--r);border:1px dashed var(--b);cursor:pointer;margin-bottom:16px" onclick="toast('경험 추가 준비 중')">
+      <span style="font-size:20px;color:var(--td)">+</span><p style="font-size:13px;color:var(--td)">강연, 협업, 수상 경력 등 추가하기</p>
+    </div>
+    <div class="col g10">
+      <button class="btn bw" onclick="obNext()">다음</button>
+      <button class="btn bg" style="height:44px;font-size:14px" onclick="obNext()">건너뛰기</button>
+    </div>
+  </div>
+
+  <!-- Step 7: 자기소개 AI -->
+  <div id="ob7" class="ob-step" style="display:none">
+    <h2 style="font-size:24px;font-weight:700;margin-bottom:8px">AI가 나를<br>소개해드릴게요</h2>
+    <p style="font-size:14px;color:var(--tm);line-height:1.65;margin-bottom:20px">지금까지 입력한 정보를 바탕으로<br>자기소개 초안을 만들었어요.</p>
+    <div class="ai-box" style="flex:1">
+      <div class="ai-badge">✨ 키워드 · Instagram · 직함 기반</div>
+      <textarea class="inp ta" style="height:100px;border-color:#444;line-height:1.7" id="ob-bio">B2B SaaS 분야에서 5년간 Product Owner로 활동해온 강민준입니다. 전문성과 신뢰를 바탕으로 팀을 이끌며, 비즈니스 네트워킹과 파트너십을 통해 성장을 만들어가는 것을 즐깁니다.</textarea>
+      <button class="btn bg" style="height:40px;font-size:13px;margin-top:10px" onclick="toast('새로운 초안을 생성하고 있어요...')">🔄 다시 생성하기</button>
+    </div>
+    <div class="col g10" style="margin-top:16px">
+      <button class="btn bw" onclick="obNext()">완료</button>
+      <button class="btn bg" style="height:44px;font-size:14px" onclick="obNext()">나중에 작성하기</button>
+    </div>
+  </div>
+
+  <!-- Step 8: 완료 -->
+  <div id="ob8" class="ob-step" style="display:none">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px">
+      <div style="font-size:64px;animation:pop .4s ease">🎉</div>
+      <h2 style="font-size:26px;font-weight:700;line-height:1.3">내 Byro가<br>만들어졌어요!</h2>
+      <p style="font-size:14px;color:var(--tm)">지금 바로 링크를 공유해 보세요</p>
+      <div class="lbox" style="width:100%"><span class="lurl">byro.me/@gangjunmin</span><button class="btn-sm" onclick="toast('링크가 복사됐어요')">복사</button></div>
+    </div>
+    <div class="col g10">
+      <button class="btn bw" onclick="setAuth(true);go('s-myprofile')">내 Byro 보러가기</button>
+      <button class="btn bg" style="height:44px;font-size:14px" onclick="setAuth(true);go('s-edit')">프로필 더 꾸미기</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ██████████████ P-02 경험 남기기 (모달) ██████████████ -->
+<div class="modal-overlay" id="modal-rep" onclick="closeRepModal(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div style="padding:0 20px 0">
+      <div class="row g12" style="margin-bottom:20px">
+        <div class="av av44">이</div>
+        <div><p style="font-size:15px;font-weight:600">이지민 님과의 경험을</p><p style="font-size:13px;color:var(--tm);margin-top:3px">키워드로 남겨주세요</p></div>
+      </div>
+      <div class="btw" style="margin-bottom:8px">
+        <p style="font-size:12px;color:var(--tm)">어떤 인상을 받으셨나요?</p>
+        <span id="rep-count-lbl" style="font-size:12px;font-weight:600;color:var(--ts)">최대 5개</span>
+      </div>
+      <p id="rep-warn" style="font-size:12px;color:#F59E0B;margin-bottom:8px;display:none">⚠ 최대 5개까지 선택할 수 있어요</p>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px" id="rep-tags">
+        <span class="tag" onclick="toggleRepTag(this)">전문적인</span>
+        <span class="tag" onclick="toggleRepTag(this)">신뢰할 수 있는</span>
+        <span class="tag" onclick="toggleRepTag(this)">통찰력 있는</span>
+        <span class="tag" onclick="toggleRepTag(this)">실행력 있는</span>
+        <span class="tag" onclick="toggleRepTag(this)">유쾌한</span>
+        <span class="tag" onclick="toggleRepTag(this)">진정성 있는</span>
+        <span class="tag" onclick="toggleRepTag(this)">꼼꼼한</span>
+        <span class="tag" onclick="toggleRepTag(this)">네트워킹 능숙</span>
+      </div>
+      <div class="btw" style="margin-bottom:8px">
+        <p style="font-size:12px;color:var(--tm)">한마디 <span style="color:var(--td)">(선택)</span></p>
+        <span style="font-size:11px;color:var(--tm);background:var(--s2);padding:3px 10px;border-radius:100px;border:1px solid var(--b)">익명으로 작성</span>
+      </div>
+      <div class="card csm row g10" style="margin-bottom:8px">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--s2);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--tm);flex-shrink:0">?</div>
+        <p style="font-size:12px;color:var(--tm)">익명 사용자</p>
+      </div>
+      <textarea class="inp ta" placeholder="짧게 남겨주세요 (최대 100자)" maxlength="100" style="margin-bottom:16px" id="rep-text"></textarea>
+      <div class="row g8" style="margin-bottom:8px">
+        <div style="width:16px;height:16px;border:1px solid var(--b);border-radius:4px;flex-shrink:0"></div>
+        <p style="font-size:12px;color:var(--tm)">로그인하면 이름으로 남길 수 있어요 <span style="color:var(--ts);cursor:pointer;text-decoration:underline" onclick="go('s-onboard')">로그인 →</span></p>
+      </div>
+      <button class="btn bw" style="margin-top:12px" onclick="submitRep()">경험 남기기</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ██████████████ 완료 ██████████████ -->
+<div class="screen" id="s-done">
+  <nav class="nav">
+    <button class="ibtn" onclick="go('s-myprofile')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button>
+  </nav>
+  <div class="scroll">
+    <div style="min-height:500px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center">
+      <div style="font-size:64px;margin-bottom:20px;animation:pop .4s ease">🤝</div>
+      <h2 style="font-size:24px;font-weight:700;line-height:1.3;margin-bottom:10px">경험을 남겼어요!</h2>
+      <p style="font-size:14px;color:var(--tm);line-height:1.7;margin-bottom:28px">이지민 님도 평판이 쌓였어요.<br>서로 연결된 신뢰가 만들어졌습니다.</p>
+      <div class="card" style="width:100%;text-align:left;margin-bottom:16px">
+        <div class="row g10" style="margin-bottom:8px"><span style="font-size:18px">💡</span><p style="font-size:14px;font-weight:600">나도 평판을 받고 싶다면?</p></div>
+        <p style="font-size:13px;color:var(--tm);line-height:1.6">내 Byro 링크를 공유하면 상대방도 나에게 경험을 남길 수 있어요.</p>
+      </div>
+    </div>
+    <div style="padding:0 20px 40px" class="col g10">
+      <button class="btn bw" onclick="toast('링크가 복사됐어요')">내 Byro 링크 공유하기</button>
+      <button class="btn bg" style="height:44px;font-size:14px" onclick="go('s-myprofile')">내 프로필로 돌아가기</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="toast" id="toast-el"></div>
+
+<script>
+// ─── Navigation ───
+let stack=[];
+function go(id){
+  const cur=document.querySelector('.screen.active');
+  if(!cur||cur.id===id)return;
+  stack.push(cur.id);
+  cur.classList.remove('active');
+  cur.classList.add('out');
+  setTimeout(()=>cur.classList.remove('out'),250);
+  const next=document.getElementById(id);
+  if(next){next.classList.add('active');next.querySelector('.scroll')?.scrollTo(0,0);}
+}
+function goBack(){
+  if(stack.length===0){go('s-home');return;}
+  const prev=stack.pop();
+  const cur=document.querySelector('.screen.active');
+  if(cur){cur.classList.remove('active');cur.style.transform='translateX(24px)';setTimeout(()=>{cur.style.transform='';},250);}
+  const p=document.getElementById(prev);
+  if(p)p.classList.add('active');
+}
+
+// ─── Auth ───
+let isAuth=false;
+function setAuth(v){
+  isAuth=v;
+  document.getElementById('home-guest').style.display=v?'none':'flex';
+  document.getElementById('home-user').style.display=v?'flex':'none';
+  document.getElementById('btn-home-login').style.display=v?'none':'block';
+  document.getElementById('btn-home-av').style.display=v?'flex':'none';
+  document.getElementById('btn-home-logout').style.display=v?'inline':'none';
+  go('s-home');
+}
+
+// ─── Toast ───
+let toastTimer;
+function toast(msg){
+  const el=document.getElementById('toast-el');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2400);
+}
+
+// ─── Tags ───
+function toggleTag(el){
+  el.classList.toggle('on');
+}
+
+// ─── Onboarding ───
+let obStep=1;const OB_TOTAL=8;
+function obRender(){
+  for(let i=1;i<=OB_TOTAL;i++){
+    const s=document.getElementById('ob'+i);
+    if(s)s.style.display=i===obStep?'flex':'none';
+  }
+  const dots=document.getElementById('ob-dots');
+  dots.innerHTML='';
+  for(let i=1;i<=OB_TOTAL;i++){
+    const d=document.createElement('div');
+    d.className='sdot'+(i===obStep?' on':'');
+    dots.appendChild(d);
+  }
+  const back=document.getElementById('ob-back');
+  if(back)back.style.visibility=obStep>1?'visible':'hidden';
+}
+function obNext(){obStep=Math.min(obStep+1,OB_TOTAL);obRender();}
+function obPrev(){obStep=Math.max(obStep-1,1);obRender();}
+document.getElementById('s-onboard').addEventListener('transitionend',()=>{
+  if(document.getElementById('s-onboard').classList.contains('active'))obRender();
+});
+// Init onboard on first load
+obRender();
+
+// ─── Rep modal ───
+function openRepModal(){
+  document.getElementById('modal-rep').classList.add('open');
+}
+function closeRepModal(e){
+  if(e.target===document.getElementById('modal-rep'))
+    document.getElementById('modal-rep').classList.remove('open');
+}
+function toggleRepTag(el){
+  const tags=document.querySelectorAll('#rep-tags .tag.on');
+  const isOn=el.classList.contains('on');
+  if(!isOn&&tags.length>=5){
+    document.getElementById('rep-warn').style.display='block';
+    setTimeout(()=>document.getElementById('rep-warn').style.display='none',2000);
+    el.style.animation='shake .22s ease';
+    setTimeout(()=>el.style.animation='',220);
+    return;
+  }
+  el.classList.toggle('on');
+  const n=document.querySelectorAll('#rep-tags .tag.on').length;
+  document.getElementById('rep-count-lbl').textContent=n===0?'최대 5개':n+' / 5개 선택';
+}
+function submitRep(){
+  document.getElementById('modal-rep').classList.remove('open');
+  go('s-done');
+}
+
+// ─── Archive tabs ───
+function switchArc(t){
+  document.getElementById('arc-saved').style.display=t==='s'?'block':'none';
+  document.getElementById('arc-recent').style.display=t==='r'?'block':'none';
+  document.getElementById('arc-tab-s').classList.toggle('on',t==='s');
+  document.getElementById('arc-tab-r').classList.toggle('on',t==='r');
+}
+
+// ─── AI fill ───
+function aiFill(){
+  const ta=document.getElementById('bio-ta');
+  ta.value='';
+  const text='B2B SaaS 분야에서 5년간 Product Owner로 활동해온 강민준입니다. 전문성과 신뢰를 바탕으로 팀을 이끌며, 비즈니스 네트워킹과 파트너십을 통해 성장을 만들어가는 것을 즐깁니다.';
+  let i=0;
+  const timer=setInterval(()=>{
+    ta.value+=text[i];i++;
+    if(i>=text.length)clearInterval(timer);
+  },30);
+}
+
+// ─── Exp category select ───
+function selectCat(el,icon,name){
+  document.querySelectorAll('#cat-grid>div').forEach(d=>{
+    d.style.border='1px solid var(--b)';
+    d.style.background='var(--s1)';
+    d.querySelector('p').style.color='var(--tm)';
+    d.style.borderStyle='solid';
+  });
+  el.style.border='2px solid #F5F5F5';
+  el.style.background='rgba(255,255,255,.06)';
+  el.querySelector('p').style.color='var(--t)';
+  document.getElementById('prev-icon').textContent=icon;
+  document.getElementById('prev-title').textContent=name;
+  document.getElementById('prev-sub').textContent='제목을 입력해보세요';
+}
+document.getElementById('exp-title')?.addEventListener('input',function(){
+  if(this.value)document.getElementById('prev-title').textContent=this.value;
+});
+
+</script>
+</div>
+</body>
+</html>
