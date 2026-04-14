@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Byro Lofi Wireframe v2.0</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #1a1a1a; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; padding: 32px; color: #111; }
+
+  .page-title {
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .page-subtitle { color: #888; font-size: 11px; margin-bottom: 32px; }
+
+  .section-label {
+    color: #aaa;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #333;
+  }
+
+  .row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; align-items: flex-start; }
+
+  /* Phone frame */
+  .phone {
+    width: 200px;
+    min-height: 360px;
+    background: #fff;
+    border-radius: 20px;
+    border: 2px solid #333;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .phone.tall { min-height: 480px; }
+  .phone.xtall { min-height: 600px; }
+
+  /* Screen ID label */
+  .screen-id {
+    position: absolute;
+    top: -18px;
+    left: 0;
+    font-size: 9px;
+    font-weight: 700;
+    color: #888;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  .screen-id.new { color: #f0a500; }
+  .screen-id.changed { color: #64b5f6; }
+
+  .phone-wrap { position: relative; }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px 2px;
+    font-size: 7px;
+    font-weight: 700;
+    color: #333;
+    background: #fff;
+  }
+
+  /* Header */
+  .nav {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-bottom: 1.5px solid #e0e0e0;
+    background: #fff;
+    min-height: 32px;
+  }
+  .nav-back { font-size: 9px; color: #555; margin-right: 6px; }
+  .nav-title { font-size: 9px; font-weight: 700; flex: 1; }
+  .nav-action { font-size: 8px; color: #555; margin-left: auto; }
+  .nav-close { font-size: 9px; color: #555; margin-left: auto; }
+
+  /* Content */
+  .content {
+    padding: 10px;
+    flex: 1;
+    overflow-y: auto;
+    font-size: 8px;
+    line-height: 1.5;
+  }
+
+  /* Typography helpers */
+  .h1 { font-size: 13px; font-weight: 800; line-height: 1.3; margin-bottom: 6px; }
+  .h2 { font-size: 10px; font-weight: 700; margin-bottom: 4px; }
+  .h3 { font-size: 8px; font-weight: 700; margin-bottom: 3px; }
+  .body { font-size: 7.5px; color: #444; line-height: 1.5; margin-bottom: 6px; }
+  .caption { font-size: 7px; color: #888; margin-bottom: 4px; }
+  .label { font-size: 7px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+
+  /* Divider */
+  .divider { height: 1px; background: #e8e8e8; margin: 8px 0; }
+  .divider-thick { height: 4px; background: #f0f0f0; margin: 8px -10px; }
+
+  /* Buttons */
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 8px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 6px;
+    border: none;
+    cursor: default;
+  }
+  .btn-primary { background: #111; color: #fff; }
+  .btn-kakao { background: #FEE500; color: #333; }
+  .btn-outline { background: #fff; color: #111; border: 1.5px solid #ddd; }
+  .btn-outline-primary { background: #fff; color: #111; border: 1.5px solid #111; }
+  .btn-gray { background: #f3f3f3; color: #555; }
+  .btn-text { background: transparent; color: #999; font-size: 7.5px; text-align: center; display: block; margin: 4px 0; }
+  .btn-danger-text { background: transparent; color: #e53935; font-size: 7.5px; }
+  .btn-sm {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 7px;
+    font-weight: 700;
+    border: none;
+    cursor: default;
+  }
+  .btn-sm-primary { background: #111; color: #fff; }
+  .btn-sm-outline { background: #fff; color: #555; border: 1px solid #ccc; }
+  .btn-sm-danger { background: #fff; color: #e53935; border: 1px solid #e53935; }
+
+  /* Cards */
+  .card {
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 6px;
+    background: #fff;
+  }
+  .card-gray { background: #f8f8f8; border: 1.5px solid #e8e8e8; border-radius: 8px; padding: 8px; margin-bottom: 6px; }
+
+  /* SNS Row */
+  .sns-row {
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 4px;
+  }
+  .sns-icon { font-size: 10px; margin-right: 4px; }
+  .sns-info { flex: 1; }
+  .sns-name { font-size: 8px; font-weight: 700; }
+  .sns-desc { font-size: 7px; color: #888; }
+  .badge-verified { display: inline-block; font-size: 6px; font-weight: 700; color: #1a7a1a; background: #e6f5e6; border-radius: 4px; padding: 1px 4px; margin-left: 3px; }
+  .badge-beta { display: inline-block; font-size: 6px; font-weight: 700; color: #fff; background: #e65100; border-radius: 4px; padding: 1px 5px; margin-left: 3px; }
+  .badge-phase2 { display: inline-block; font-size: 6px; font-weight: 700; color: #fff; background: #6a1b9a; border-radius: 4px; padding: 1px 5px; }
+  .badge-gray { display: inline-block; font-size: 6px; color: #888; background: #f0f0f0; border-radius: 4px; padding: 1px 4px; }
+
+  /* Verification row */
+  .verif-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .verif-icon { font-size: 10px; }
+  .verif-info { flex: 1; }
+  .verif-name { font-size: 7.5px; font-weight: 700; }
+  .verif-sub { font-size: 6.5px; color: #888; }
+  .verif-status { font-size: 7px; color: #888; }
+  .verif-status.ok { color: #1a7a1a; font-weight: 700; }
+
+  /* Avatar */
+  .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #ddd; display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: #555; flex-shrink: 0;
+  }
+  .avatar-lg {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: #ddd; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #555; flex-shrink: 0; margin: 0 auto 6px;
+  }
+
+  /* Keyword chips */
+  .chip-wrap { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0; }
+  .chip {
+    padding: 3px 7px; border-radius: 12px;
+    font-size: 7px; font-weight: 600;
+    border: 1.5px solid #ddd; background: #f8f8f8; color: #333;
+  }
+  .chip.active { background: #111; color: #fff; border-color: #111; }
+  .chip.score { background: #f3f0ff; color: #6a1b9a; border-color: #d1c4e9; }
+
+  /* Input */
+  .input-box {
+    border: 1.5px solid #ddd; border-radius: 7px;
+    padding: 6px 8px; font-size: 8px; color: #333;
+    margin-bottom: 5px; background: #fafafa;
+    width: 100%;
+  }
+  .input-box.valid { border-color: #1a7a1a; }
+  .input-hint { font-size: 6.5px; color: #888; margin-top: -3px; margin-bottom: 6px; }
+  .input-ok { font-size: 6.5px; color: #1a7a1a; margin-top: -3px; margin-bottom: 6px; }
+
+  /* Profile header */
+  .profile-header {
+    padding: 12px 10px 8px;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    border-bottom: 1.5px solid #e0e0e0;
+  }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 6px 2px;
+    font-size: 7px;
+    font-weight: 600;
+    color: #999;
+    border-bottom: 2px solid transparent;
+  }
+  .tab.active { color: #111; border-bottom-color: #111; }
+
+  /* Guestbook item */
+  .gb-row {
+    display: flex;
+    gap: 5px;
+    padding: 5px 0;
+    border-bottom: 1px solid #f5f5f5;
+    align-items: flex-start;
+  }
+  .gb-content { flex: 1; }
+  .gb-name { font-size: 7.5px; font-weight: 700; }
+  .gb-text { font-size: 7px; color: #555; }
+  .gb-meta { font-size: 6.5px; color: #bbb; }
+
+  /* Archive row */
+  .arc-row {
+    display: flex;
+    gap: 6px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f5f5f5;
+    align-items: center;
+  }
+  .arc-info { flex: 1; }
+  .arc-name { font-size: 8px; font-weight: 700; }
+  .arc-role { font-size: 7px; color: #888; }
+  .arc-meta { font-size: 6.5px; color: #bbb; }
+  .arc-memo { font-size: 7px; color: #444; background: #fffde7; border-radius: 4px; padding: 3px 5px; margin-top: 3px; }
+
+  /* Drag handle */
+  .drag-handle {
+    color: #bbb; font-size: 10px; margin-right: 4px; cursor: grab; flex-shrink: 0;
+  }
+
+  /* Section block with drag */
+  .section-block {
+    border: 1.5px dashed #ccc;
+    border-radius: 8px;
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    background: #fff;
+  }
+  .section-block-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .section-block-title { font-size: 8px; font-weight: 700; flex: 1; }
+
+  /* Horizontal scroll preview */
+  .hscroll-wrap {
+    overflow-x: auto;
+    display: flex;
+    gap: 4px;
+    padding-bottom: 3px;
+    margin: 4px 0;
+  }
+  .feed-thumb {
+    width: 48px; height: 48px;
+    background: #e8e8e8;
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 6px;
+    color: #aaa;
+    border: 1px solid #ddd;
+  }
+  .hscroll-hint { font-size: 6px; color: #aaa; text-align: right; }
+
+  /* Warning box */
+  .warn-box {
+    background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px;
+    padding: 5px 7px; margin-bottom: 6px; font-size: 7px; color: #7a5a00;
+  }
+  .info-box {
+    background: #e3f2fd; border: 1px solid #90caf9; border-radius: 6px;
+    padding: 5px 7px; margin-bottom: 6px; font-size: 7px; color: #0d47a1;
+  }
+  .success-box {
+    background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 6px;
+    padding: 5px 7px; margin-bottom: 6px; font-size: 7px; color: #1b5e20;
+  }
+  .purple-box {
+    background: #f3e5f5; border: 1px solid #ce93d8; border-radius: 6px;
+    padding: 5px 7px; margin-bottom: 6px; font-size: 7px; color: #4a148c;
+  }
+
+  /* Branch arrow */
+  .branch-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #888;
+    font-size: 8px;
+    margin: 8px 0;
+    justify-content: center;
+  }
+  .branch-box {
+    border: 1.5px dashed #111;
+    border-radius: 8px;
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    text-align: center;
+    font-size: 7.5px;
+    font-weight: 700;
+    background: #f9f9f9;
+  }
+
+  /* Completion bar */
+  .progress-wrap { margin-bottom: 6px; }
+  .progress-bar-bg { background: #e0e0e0; border-radius: 4px; height: 4px; }
+  .progress-bar-fill { background: #111; border-radius: 4px; height: 4px; }
+  .progress-text { font-size: 7px; color: #555; margin-bottom: 2px; display: flex; justify-content: space-between; }
+
+  /* Bottom action bar */
+  .bottom-bar {
+    padding: 8px 10px;
+    border-top: 1.5px solid #e0e0e0;
+    background: #fff;
+  }
+
+  /* Reputation request row */
+  .req-row {
+    display: flex;
+    gap: 5px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f5f5f5;
+    align-items: center;
+  }
+  .req-info { flex: 1; }
+  .req-name { font-size: 8px; font-weight: 700; }
+  .req-msg { font-size: 7px; color: #555; }
+  .req-meta { font-size: 6.5px; color: #bbb; }
+
+  /* Score display */
+  .score-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .score-circle {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 2px solid #111;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 800; flex-shrink: 0;
+  }
+
+  /* Change note */
+  .change-note {
+    font-size: 6px;
+    color: #e65100;
+    font-weight: 700;
+    background: #fff3e0;
+    border-radius: 3px;
+    padding: 1px 4px;
+    margin-left: 3px;
+  }
+  .new-note {
+    font-size: 6px;
+    color: #fff;
+    font-weight: 700;
+    background: #f0a500;
+    border-radius: 3px;
+    padding: 1px 4px;
+    margin-left: 3px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">Byro · Lofi Wireframe</div>
+<div class="page-subtitle">v2.0 — Updated · 변경사항: ① 오픈베타 배지 ② AI/직접입력 분기 ③ SNS 연동 해제 ④ 인스타 횡스크롤 ⑤ 섹션 순서 변경 ⑥ Phase2 스코어링 예고 ⑦ 받은 평판요청 탭 ⑧ 프로필 저장 버튼</div>
+
+<!-- ─────────────────────────── LANDING ─────────────────────────── -->
+<div class="section-label">랜딩 페이지</div>
+<div class="row">
+
+  <!-- H-00-A -->
+  <div class="phone-wrap">
+    <div class="screen-id">H-00-A · 홈 — 비로그인</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="content">
+        <div style="text-align:center; padding: 16px 0 8px;">
+          <div style="font-size:16px; font-weight:900; letter-spacing:-0.5px; margin-bottom:2px;">Byro</div>
+          <div style="font-size:7px; color:#888; margin-bottom:16px;">Build Your Real Offline Identity</div>
+          <div class="h1">말하지 않아도<br>증명되는 나</div>
+          <div class="body">비즈니스 모임에서 명함 대신 신뢰를 공유하세요</div>
+        </div>
+        <div class="card-gray">
+          <div style="font-size:7.5px; margin-bottom:4px;"><b>🔍 Before</b> 상대를 사전에 파악</div>
+          <div class="caption">모임 전날 링크 하나로 경력 검증 정보 확인</div>
+        </div>
+        <div class="card-gray">
+          <div style="font-size:7.5px; margin-bottom:4px;"><b>💬 During</b> 명함 대신 링크 공유</div>
+          <div class="caption">한 마디로 프로필 전달</div>
+        </div>
+        <div class="card-gray">
+          <div style="font-size:7.5px; margin-bottom:4px;"><b>⭐ After</b> 평판이 자동으로 쌓임</div>
+          <div class="caption">키워드 클릭으로 신뢰 자산 누적</div>
+        </div>
+        <div style="height:12px;"></div>
+        <button class="btn btn-primary">내 Byro 만들기</button>
+        <div class="btn-text">이미 Byro 계정이 있으신가요? <b>로그인</b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- H-00-B -->
+  <div class="phone-wrap">
+    <div class="screen-id">H-00-B · 홈 — 로그인</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="content">
+        <div style="display:flex; align-items:center; gap:6px; margin-bottom:12px;">
+          <div style="font-size:13px; font-weight:900;">Byro</div>
+          <div style="flex:1;"></div>
+          <div class="avatar">강</div>
+        </div>
+        <div style="font-size:7px; color:#888; margin-bottom:6px;">Build Your Real Offline Identity</div>
+        <div class="h1">말하지 않아도<br>증명되는 나</div>
+        <div class="progress-wrap" style="margin-top:8px;">
+          <div class="progress-text"><span>강민준 · 프로필 완성도</span><span>68%</span></div>
+          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:68%;"></div></div>
+          <div class="caption" style="text-align:right; margin-top:2px;">탭해서 관리하기 →</div>
+        </div>
+        <div class="divider"></div>
+        <div class="card-gray" style="font-size:7px; margin-bottom:4px;"><b>🔍 Before</b> 모임 전날 링크 하나로 경력 검증 정보 확인</div>
+        <div class="card-gray" style="font-size:7px; margin-bottom:4px;"><b>💬 During</b> 한 마디로 프로필 전달</div>
+        <div class="card-gray" style="font-size:7px; margin-bottom:4px;"><b>⭐ After</b> 키워드 클릭으로 신뢰 자산 누적</div>
+        <div style="height:10px;"></div>
+        <button class="btn btn-primary">내 프로필 보러가기</button>
+        <div class="caption" style="text-align:center;">byro.me/@gangjunmin</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ─────────────────────────── ONBOARDING ─────────────────────────── -->
+<div class="section-label">온보딩 (P-06 · 9 Steps)</div>
+<div class="row">
+
+  <!-- Step 1 -->
+  <div class="phone-wrap">
+    <div class="screen-id">Step 1 · 소셜 로그인</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-close">닫기 ✕</span></div>
+      <div class="content">
+        <div style="text-align:center; padding: 16px 0 12px;">
+          <div style="font-size:16px; font-weight:900; margin-bottom:4px;">Byro</div>
+          <div class="h2">신뢰로 연결되는<br>나의 정체성</div>
+          <div class="caption" style="margin-top:6px;">3분이면 프로필을 만들 수 있어요</div>
+        </div>
+        <div style="height:16px;"></div>
+        <button class="btn btn-kakao">💬 카카오로 시작하기</button>
+        <button class="btn btn-outline">G 구글로 시작하기</button>
+        <button class="btn btn-outline">N 네이버로 시작하기</button>
+        <div class="caption" style="text-align:center; margin-top:8px;">시작하면 이용약관 및 개인정보 처리방침에 동의하게 됩니다</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="phone-wrap">
+    <div class="screen-id">Step 2 · 본인인증 (필수)</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">← 닫기</span></div>
+      <div class="content">
+        <div style="margin-bottom:12px;">
+          <div class="h2">본인 확인이 필요해요</div>
+          <div class="body">이름은 본인인증을 통해 확인됩니다.<br>인증 후 수정이 불가능해요.</div>
+        </div>
+        <button class="btn btn-outline-primary">💬 SMS 인증 — 휴대폰 문자 인증 →</button>
+        <button class="btn btn-kakao">💛 카카오 인증 — 카카오페이 전자서명 →</button>
+        <div class="info-box" style="margin-top:8px;">🔒 인증된 이름은 프로필에 실명으로 표시됩니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="phone-wrap">
+    <div class="screen-id changed">Step 3 · 링크 ID 설정 (필수) ← ① 변경</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">← 닫기</span></div>
+      <div class="content">
+        <div style="margin-bottom:10px;">
+          <div class="h2">나만의 Byro 링크를<br>만들어보세요 <span class="badge-beta">오픈베타</span></div>
+          <div class="warn-box" style="margin-top:6px;">
+            🔒 <b>오픈베타 참여자 전용 기능</b><br>
+            현재 오픈베타 참여자에게만 무료 제공됩니다.<br>정식 출시 후 유료 전환 예정이에요.
+          </div>
+          <div class="body">한 번 설정하면 변경이 어렵습니다.</div>
+        </div>
+        <div class="label">Byro 링크 ID</div>
+        <div class="input-box valid">byro.me/@ gangjunmin</div>
+        <div class="input-ok">✓ 사용 가능한 ID예요</div>
+        <div class="caption">· 영문 소문자, 숫자, 밑줄(_)<br>· 4~20자 이내</div>
+        <div style="height:16px;"></div>
+        <button class="btn btn-primary">다음</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="phone-wrap">
+    <div class="screen-id">Step 4 · 키워드 선택 (생략가능)</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">← 닫기</span></div>
+      <div class="content">
+        <div style="margin-bottom:10px;">
+          <div class="h2">나를 표현하는 키워드를<br>골라보세요</div>
+          <div class="body">방문자가 평가할 때 사용할 키워드예요 (최대 10개)</div>
+          <div class="info-box">✨ 키워드는 나중에 AI 자기소개 생성에도 활용돼요</div>
+        </div>
+        <div class="chip-wrap">
+          <div class="chip active">전문적인</div>
+          <div class="chip">신뢰할 수 있는</div>
+          <div class="chip active">통찰력 있는</div>
+          <div class="chip">실행력 있는</div>
+          <div class="chip active">네트워킹 능숙</div>
+          <div class="chip">유쾌한</div>
+          <div class="chip">진정성 있는</div>
+          <div class="chip">꼼꼼한</div>
+          <div class="chip">따뜻한</div>
+          <div class="chip">추진력 있는</div>
+        </div>
+        <div style="height:16px;"></div>
+        <button class="btn btn-primary">다음</button>
+        <div class="btn-text">건너뛰기</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 5 -->
+  <div class="phone-wrap">
+    <div class="screen-id">Step 5 · SNS 연동 (생략가능)</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">← 닫기</span></div>
+      <div class="content">
+        <div style="margin-bottom:8px;">
+          <div class="h2">SNS를 연동하면<br>더 풍부한 프로필이 돼요</div>
+          <div class="body">AI가 SNS 정보를 분석해 자기소개를 자동 작성해드려요.</div>
+          <div class="info-box">✨ SNS 정보가 많을수록 AI 자기소개 품질이 높아져요</div>
+        </div>
+        <div class="card">
+          <div class="sns-row">
+            <span class="sns-icon">📸</span>
+            <div class="sns-info"><div class="sns-name">Instagram</div><div class="sns-desc">최신 피드 · 팔로워 · 요약 분석</div></div>
+            <button class="btn-sm btn-sm-primary">연동하기</button>
+          </div>
+          <div class="sns-row" style="border:none;">
+            <span class="sns-icon">in</span>
+            <div class="sns-info"><div class="sns-name">LinkedIn</div><div class="sns-desc">직업 · 경력 · 활동 요약 분석</div></div>
+            <button class="btn-sm btn-sm-primary">연동하기</button>
+          </div>
+        </div>
+        <div style="height:10px;"></div>
+        <button class="btn btn-primary">다음</button>
+        <div class="btn-text">건너뛰기</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 6 -->
+  <div class="phone-wrap">
+    <div class="screen-id">Step 6 · 검증 & 경험 (생략가능)</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">← 닫기</span></div>
+      <div class="content">
+        <div style="margin-bottom:8px;">
+          <div class="h2">신뢰를 쌓는<br>검증 항목을 추가해요</div>
+          <div class="body">지금 추가하지 않아도 나중에 언제든 설정할 수 있어요.</div>
+          <div class="info-box">✨ 검증 정보도 AI 자기소개 생성에 활용돼요</div>
+        </div>
+        <div class="label">✅ Verified</div>
+        <div class="verif-row"><span class="verif-icon">📱</span><div class="verif-info"><div class="verif-name">통신 일관성 인증</div></div><button class="btn-sm btn-sm-outline">인증하기</button></div>
+        <div class="verif-row"><span class="verif-icon">💼</span><div class="verif-info"><div class="verif-name">커리어 지속성 인증</div></div><button class="btn-sm btn-sm-outline">인증하기</button></div>
+        <div class="verif-row"><span class="verif-icon">🤝</span><div class="verif-info"><div class="verif-name">리멤버 직업 네트워크</div></div><button class="btn-sm btn-sm-outline">인증하기</button></div>
+        <div class="verif-row" style="border:none;"><span class="verif-icon">🏢</span><div class="verif-info"><div class="verif-name">사업자등록 현황</div></div><button class="btn-sm btn-sm-outline">인증하기</button></div>
+        <div class="divider"></div>
+        <div class="label">🏷️ 경험</div>
+        <button class="btn btn-outline" style="margin-top:4px;">+ 강연, 협업, 수상 경력 등 추가하기</button>
+        <div style="height:6px;"></div>
+        <button class="btn btn-primary">다음</button>
+        <div class="btn-text">건너뛰기</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Step 7: Branch screens -->
+<div class="row">
+
+  <!-- Step 7: 방법 선택 (NEW) -->
+  <div class="phone-wrap">
+    <div class="screen-id new">Step 7-선택 · 자기소개 방법 선택 ← ② NEW</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">← 닫기</span></div>
+      <div class="content">
+        <div style="margin-bottom:10px;">
+          <div class="h2">자기소개를 어떻게<br>작성할까요?</div>
+          <div class="body">지금까지 입력한 정보와 연동된 SNS를 활용해 자기소개를 만들 수 있어요.</div>
+        </div>
+        <div class="branch-box" style="margin-bottom:8px; cursor:pointer; border-color:#111;">
+          <div style="font-size:14px; margin-bottom:4px;">✨</div>
+          <div style="font-size:8px; font-weight:800; margin-bottom:2px;">AI가 자기소개 작성하기</div>
+          <div style="font-size:7px; color:#666;">SNS·키워드 기반으로 초안을 만들어드려요</div>
+        </div>
+        <div class="branch-indicator">또는</div>
+        <div class="branch-box" style="cursor:pointer;">
+          <div style="font-size:14px; margin-bottom:4px;">✍️</div>
+          <div style="font-size:8px; font-weight:800; margin-bottom:2px;">직접 작성하기</div>
+          <div style="font-size:7px; color:#666;">내 말로 자유롭게 작성해요</div>
+        </div>
+        <div class="btn-text" style="margin-top:8px;">나중에 작성하기</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 7-A: AI 결과 -->
+  <div class="phone-wrap">
+    <div class="screen-id changed">Step 7-A · AI 자기소개 결과 ← ② 분기 후</div>
+    <div class="phone tall">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">← 닫기</span></div>
+      <div class="content">
+        <div style="margin-bottom:8px;">
+          <div class="h2">AI가 나를 소개해드릴게요</div>
+          <div class="body">지금까지 입력한 정보를 바탕으로 자기소개 초안을 만들었어요.</div>
+        </div>
+        <div class="success-box">
+          <div style="font-size:7px; font-weight:700; margin-bottom:3px;">✨ AI 초안 생성됨 · 키워드 + Instagram + 직함 기반</div>
+          <div style="font-size:7.5px; line-height:1.5; color:#1b5e20;">B2B SaaS 분야에서 5년간 Product Owner로 활동해 온 강민준입니다. 전문성과 신뢰를 바탕으로 팀을 이끌며, 비즈니스 네트워킹과 파트너십을 통해 성장을 만들어가는 것을 즐깁니다.</div>
+        </div>
+        <button class="btn btn-outline" style="margin-bottom:6px;">🔄 다시 생성하기</button>
+        <div class="label">직접 수정</div>
+        <textarea class="input-box" style="height:60px; resize:none; font-size:7.5px;">B2B SaaS 분야에서 5년간 Product Owner로 활동해 온 강민준입니다...</textarea>
+        <div class="divider"></div>
+        <div class="warn-box" style="font-size:7px;">
+          <b>⚠️ 정보 부족 시</b><br>
+          AI가 소개를 만들려면 아래 중 하나 이상이 필요해요:<br>
+          · 평판 키워드 선택 · SNS 연동 · 검증 항목 인증
+        </div>
+        <button class="btn btn-primary">완료</button>
+        <div class="btn-text">나중에 작성하기</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 7-B: 직접 입력 (NEW) -->
+  <div class="phone-wrap">
+    <div class="screen-id new">Step 7-B · 직접 입력 ← ② NEW 분기</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">← 닫기</span></div>
+      <div class="content">
+        <div style="margin-bottom:10px;">
+          <div class="h2">자기소개를 직접<br>작성해주세요</div>
+          <div class="body">나를 잘 표현하는 문장으로 자유롭게 써보세요.</div>
+        </div>
+        <div class="label">자기소개</div>
+        <textarea class="input-box" style="height:100px; resize:none; font-size:7.5px;" placeholder="예: 창업 3년차. 사람을 만나고 연결하는 걸 좋아합니다."></textarea>
+        <div class="caption">최대 200자</div>
+        <div class="info-box" style="margin-top:6px;">💡 나중에 AI 자기소개로 바꿀 수 있어요</div>
+        <div style="height:12px;"></div>
+        <button class="btn btn-primary">완료</button>
+        <div class="btn-text">나중에 작성하기</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 8 -->
+  <div class="phone-wrap">
+    <div class="screen-id">Step 8 · 프로필 완성 🎉</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">← 닫기</span></div>
+      <div class="content" style="text-align:center; padding-top:20px;">
+        <div style="font-size:32px; margin-bottom:8px;">🎉</div>
+        <div class="h2" style="margin-bottom:4px;">내 Byro가<br>만들어졌어요!</div>
+        <div class="body">지금 바로 링크를 공유해 보세요</div>
+        <div style="height:12px;"></div>
+        <div class="card-gray" style="text-align:left; margin-bottom:8px;">
+          <div style="font-size:7.5px; font-weight:700; margin-bottom:2px;">내 Byro 링크</div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="font-size:7.5px; color:#555;">byro.me/@gangjunmin</div>
+            <button class="btn-sm btn-sm-primary">복사</button>
+          </div>
+        </div>
+        <button class="btn btn-primary">내 Byro 보러가기</button>
+        <button class="btn btn-outline">프로필 더 꾸미기</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ─────────────────────────── 내 BYRO ─────────────────────────── -->
+<div class="section-label">내 Byro</div>
+<div class="row">
+
+  <!-- P-03 내 Byro (섹션 드래그 + SNS 연동 해제) -->
+  <div class="phone-wrap">
+    <div class="screen-id changed">P-03 · 내 Byro (본인) ← ③⑤⑥ 변경</div>
+    <div class="phone xtall">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav">
+        <span class="nav-back">← 내 Byro</span>
+        <span class="nav-title" style="text-align:center; color:#888; font-size:7px;">byro.me/@gangjunmin</span>
+        <span class="nav-action">⚙️</span>
+      </div>
+      <div class="content">
+        <!-- 완성도 -->
+        <div class="progress-wrap">
+          <div class="progress-text"><span>프로필 완성도</span><span>72%</span></div>
+          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:72%;"></div></div>
+          <div style="display:flex; gap:3px; margin-top:3px; flex-wrap:wrap;">
+            <span class="badge-gray">✓ 이름</span><span class="badge-gray">✓ 자기소개</span><span class="badge-gray">✓ Instagram</span><span style="font-size:6px; color:#e53935;">LinkedIn 미연동</span><span style="font-size:6px; color:#e53935;">검증 0개</span>
+          </div>
+        </div>
+        <!-- 기본정보 -->
+        <div class="profile-header" style="text-align:left; padding: 8px 0;">
+          <div class="avatar-lg" style="margin:0 0 6px;">강</div>
+          <div style="font-size:10px; font-weight:800;">강민준</div>
+          <div style="font-size:7.5px; color:#555;">Product Owner 5년 경력</div>
+          <div style="font-size:7.5px; color:#888;">MIT 공과대학교 기계공학과 졸업</div>
+          <div style="font-size:7.5px; margin-top:4px; color:#333; line-height:1.4;">창업 3년차. 사람을 만나고 연결하는 걸 좋아합니다.</div>
+          <button class="btn-sm btn-sm-outline" style="margin-top:5px;">✏️ 기본 정보 편집</button>
+        </div>
+
+        <div class="divider-thick"></div>
+
+        <!-- 섹션 순서 안내 -->
+        <div class="info-box" style="font-size:6.5px; padding:4px 6px;">
+          ≡ 각 섹션 왼쪽의 핸들을 잡아 순서를 바꿀 수 있어요 <span class="change-note">변경</span>
+        </div>
+
+        <!-- SNS 섹션 블럭 (드래그 가능) -->
+        <div class="section-block">
+          <div class="section-block-header">
+            <span class="drag-handle">≡</span>
+            <span class="section-block-title">SNS 연동</span>
+            <button class="btn-sm btn-sm-outline" style="font-size:6px; padding:2px 5px;">+ 추가</button>
+          </div>
+          <!-- Instagram 연동됨 -->
+          <div class="sns-row">
+            <span class="sns-icon">📸</span>
+            <div class="sns-info">
+              <div class="sns-name">Instagram <span class="badge-verified">✓ 인증됨</span></div>
+              <div class="sns-desc">AI 요약: 스타트업 씬에서 활발히 활동 중</div>
+            </div>
+            <button class="btn-sm btn-sm-danger" style="font-size:6px;">연동 해제</button>
+          </div>
+          <!-- LinkedIn 미연동 -->
+          <div class="sns-row" style="border:none;">
+            <span class="sns-icon" style="opacity:0.4;">in</span>
+            <div class="sns-info">
+              <div class="sns-name" style="color:#aaa;">LinkedIn</div>
+              <div class="sns-desc">연동하면 AI 요약이 생성돼요</div>
+            </div>
+            <button class="btn-sm btn-sm-outline" style="font-size:6px;">연동하기</button>
+          </div>
+        </div>
+
+        <!-- 검증 및 경험 섹션 블럭 -->
+        <div class="section-block">
+          <div class="section-block-header">
+            <span class="drag-handle">≡</span>
+            <span class="section-block-title">검증 및 경험</span>
+            <button class="btn-sm btn-sm-outline" style="font-size:6px; padding:2px 5px;">⚙️ 관리</button>
+          </div>
+          <div class="verif-row"><span class="verif-icon">💼</span><div class="verif-info"><div class="verif-name">커리어 지속성 <span class="badge-verified">인증됨</span></div><div class="verif-sub">평균 대비 128% 장기 재직</div></div></div>
+          <div class="verif-row" style="border:none;"><span class="verif-icon">🤝</span><div class="verif-info"><div class="verif-name">리멤버 네트워크 <span style="font-size:6px; color:#aaa;">미인증</span></div></div><button class="btn-sm btn-sm-outline" style="font-size:6px;">인증하기</button></div>
+          <div class="divider"></div>
+          <div style="font-size:7px; color:#888; margin-bottom:3px;">경험</div>
+          <div style="font-size:7.5px; margin-bottom:2px;">🎤 TEDx Seoul 2023</div>
+          <div style="font-size:7.5px;">🌏 일본 파트너사 6개월</div>
+        </div>
+
+        <!-- 평판 섹션 블럭 -->
+        <div class="section-block">
+          <div class="section-block-header">
+            <span class="drag-handle">≡</span>
+            <span class="section-block-title">평판 키워드</span>
+          </div>
+          <div class="chip-wrap">
+            <div class="chip active">전문적인 <b>8</b></div>
+            <div class="chip active">신뢰할 수 있는 <b>6</b></div>
+            <div class="chip active">통찰력 있는 <b>4</b></div>
+          </div>
+          <div style="font-size:7px; color:#888; margin-top:4px;">총 18회</div>
+          <div class="purple-box" style="margin-top:6px; font-size:6.5px;">
+            <span class="badge-phase2">Phase 2</span> &nbsp;
+            <b>평판 스코어링</b> 예정 — 비로그인 1점, 로그인 3점 등 가중 산출 → 1~100 스코어
+          </div>
+        </div>
+
+        <!-- 방명록 섹션 블럭 -->
+        <div class="section-block">
+          <div class="section-block-header">
+            <span class="drag-handle">≡</span>
+            <span class="section-block-title">방명록</span>
+          </div>
+          <div class="gb-row">
+            <div class="avatar" style="font-size:8px;">이</div>
+            <div class="gb-content"><div class="gb-name">이지민</div><div class="gb-text">네트워킹 행사에서 만났는데 정말 인사이트 넘치는 분.</div><div class="gb-meta">3일 전</div></div>
+          </div>
+          <div class="gb-row" style="border:none;">
+            <div class="avatar" style="font-size:8px;">박</div>
+            <div class="gb-content"><div class="gb-name">박서연</div><div class="gb-text">실행력이 정말 대단하신 분.</div><div class="gb-meta">1주 전</div></div>
+          </div>
+        </div>
+
+      </div>
+      <div class="bottom-bar" style="display:flex; gap:6px;">
+        <button class="btn btn-outline" style="flex:1; margin:0; font-size:7px;">🔖 아카이브 보기</button>
+        <button class="btn btn-primary" style="flex:1; margin:0; font-size:7px;">프로필 미리보기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- P-04 기본정보 편집 -->
+  <div class="phone-wrap">
+    <div class="screen-id">P-04 · 기본정보 편집</div>
+    <div class="phone tall">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">← 프로필 편집</span></div>
+      <div class="content">
+        <div style="text-align:center; margin-bottom:10px;">
+          <div class="avatar-lg">강</div>
+          <div style="font-size:7.5px; color:#0d47a1; cursor:pointer;">📷 사진 변경</div>
+        </div>
+        <div class="label">이름</div>
+        <div class="input-box" style="color:#aaa; background:#f5f5f5;">강민준 (변경 불가)</div>
+        <div class="label">직함 / 소속</div>
+        <div class="input-box">B2B SaaS 스타트업 대표</div>
+        <div class="label">학력/전공</div>
+        <div class="input-box">MIT 공과대학교 / 기계공학과</div>
+        <div class="label">자기소개 <span style="font-size:6px; color:#0d47a1; font-weight:700;">✨ AI로 채우기</span></div>
+        <textarea class="input-box" style="height:60px; resize:none; font-size:7.5px;">창업 3년차. 사람을 만나고 연결하는 걸 좋아합니다. Series A 준비 중.</textarea>
+        <div class="caption">✨ SNS 연동 시 AI가 자기소개 초안을 자동으로 작성해드려요</div>
+        <div class="label" style="margin-top:6px;">평판 키워드</div>
+        <div class="chip-wrap">
+          <div class="chip active">전문적인</div>
+          <div class="chip active">신뢰할 수 있는</div>
+          <div class="chip active">통찰력 있는</div>
+          <div class="chip active">실행력 있는</div>
+          <div class="chip active">유쾌한</div>
+          <div class="chip">+ 추가</div>
+        </div>
+        <div style="height:10px;"></div>
+        <button class="btn btn-primary">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- P-05 검증 항목 관리 -->
+  <div class="phone-wrap">
+    <div class="screen-id">P-05 · 검증 항목 관리</div>
+    <div class="phone tall">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">← 검증 항목 관리</span></div>
+      <div class="content">
+        <div class="body">검증된 항목은 프로필에 배지로 표시됩니다. 최대 5개까지 선택할 수 있어요.</div>
+        <div class="label" style="margin-top:6px;">✅ Verified 자동 검증</div>
+        <div class="verif-row"><span class="verif-icon">📱</span><div class="verif-info"><div class="verif-name">통신 일관성 <span class="badge-verified">인증됨</span></div><div class="verif-sub">PASS 본인인증 연동</div></div></div>
+        <div class="verif-row"><span class="verif-icon">💼</span><div class="verif-info"><div class="verif-name">커리어 지속성 <span class="badge-verified">인증됨</span></div><div class="verif-sub">건강보험 재직 확인</div></div></div>
+        <div class="verif-row"><span class="verif-icon">🤝</span><div class="verif-info"><div class="verif-name">리멤버 직업 네트워크</div><div class="verif-sub">리멤버 계정 연동</div></div><button class="btn-sm btn-sm-outline">인증하기</button></div>
+        <div class="verif-row" style="border:none;"><span class="verif-icon">🏢</span><div class="verif-info"><div class="verif-name">사업자등록 현황</div><div class="verif-sub">국세청 공개 API</div></div><button class="btn-sm btn-sm-outline">인증하기</button></div>
+        <div class="divider"></div>
+        <div class="label">🏷️ 경험 직접 입력</div>
+        <div class="card" style="margin-top:4px;">
+          <div style="font-size:7.5px; font-weight:700; margin-bottom:2px;">🎤 강연 / 연설</div>
+          <div style="font-size:7px; color:#555;">2023 TEDx Seoul</div>
+          <button class="btn-sm btn-sm-outline" style="margin-top:3px; font-size:6.5px;">수정</button>
+        </div>
+        <div class="card">
+          <div style="font-size:7.5px; font-weight:700; margin-bottom:2px;">🌏 해외 협업 프로젝트</div>
+          <div style="font-size:7px; color:#555;">일본 파트너사 6개월</div>
+          <button class="btn-sm btn-sm-outline" style="margin-top:3px; font-size:6.5px;">수정</button>
+        </div>
+        <button class="btn btn-outline">+ 경험 추가하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 경험 추가하기 신규 화면 -->
+  <div class="phone-wrap">
+    <div class="screen-id">경험 추가하기 · 신규 화면</div>
+    <div class="phone tall">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">← 경험 추가하기</span><span class="nav-action">저장</span></div>
+      <div class="content">
+        <div class="body" style="margin-bottom:8px;">강연, 협업, 수상 등 주요 경험을 등록해요.<br>프로필에 LinkedIn 스타일로 표시됩니다.</div>
+        <div class="label">카테고리 선택</div>
+        <div class="chip-wrap">
+          <div class="chip active">🎤 강연 / 연설</div>
+          <div class="chip">🤝 프로젝트 / 협업</div>
+          <div class="chip">🏆 수상 / 선정</div>
+          <div class="chip">📚 책 출판</div>
+          <div class="chip">🌏 해외 활동</div>
+          <div class="chip">+ 직접 입력</div>
+        </div>
+        <div style="height:8px;"></div>
+        <div class="label">제목 *</div>
+        <div class="input-box">TEDx Seoul 발표</div>
+        <div class="label">부연 설명 (선택)</div>
+        <div class="input-box">2023년 기술과 사람의 연결에 대해</div>
+        <div class="label">연도 (선택)</div>
+        <div class="input-box">2023</div>
+        <div class="divider"></div>
+        <div class="success-box" style="font-size:7px;">
+          <b>미리보기</b><br>
+          TEDx Seoul 발표 🎤 강연 / 연설 · 2023년
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ─────────────────────────── 아카이브 ─────────────────────────── -->
+<div class="section-label">P-07 · 아카이브</div>
+<div class="row">
+
+  <!-- 최근 본 프로필 -->
+  <div class="phone-wrap">
+    <div class="screen-id">P-07 · 최근 본 프로필</div>
+    <div class="phone tall">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">←</span><span class="nav-title">아카이브</span></div>
+      <div class="tabs">
+        <div class="tab">저장한 프로필 3</div>
+        <div class="tab active">🕐 최근 본</div>
+        <div class="tab">받은 평판요청</div>
+      </div>
+      <div class="content">
+        <div class="arc-row">
+          <div class="avatar">이</div>
+          <div class="arc-info"><div class="arc-name">이지민</div><div class="arc-role">스타트업 마케터</div></div>
+          <div class="arc-meta">방금 전</div>
+        </div>
+        <div class="arc-row">
+          <div class="avatar">박</div>
+          <div class="arc-info"><div class="arc-name">박서연</div><div class="arc-role">콘텐츠 크리에이터</div></div>
+          <div class="arc-meta">1시간 전</div>
+        </div>
+        <div class="arc-row">
+          <div class="avatar">최</div>
+          <div class="arc-info"><div class="arc-name">최지원</div><div class="arc-role">VC 심사역</div></div>
+          <div class="arc-meta">3시간 전</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 저장한 프로필 -->
+  <div class="phone-wrap">
+    <div class="screen-id changed">P-07 · 저장한 프로필 ← ⑦ 탭 추가</div>
+    <div class="phone tall">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">←</span><span class="nav-title">아카이브</span></div>
+      <div class="tabs">
+        <div class="tab active">저장한 프로필 3</div>
+        <div class="tab">🕐 최근 본</div>
+        <div class="tab">받은 평판요청</div>
+      </div>
+      <div class="content">
+        <div class="arc-row">
+          <div class="avatar">이</div>
+          <div class="arc-info">
+            <div class="arc-name">이지민 🔖</div>
+            <div class="arc-role">스타트업 마케터</div>
+            <div class="arc-memo">비즈니스 살롱 2026.03 만남. 마케팅 인사이트 굿</div>
+          </div>
+          <div class="arc-meta">3일 전</div>
+        </div>
+        <div class="arc-row">
+          <div class="avatar">박</div>
+          <div class="arc-info">
+            <div class="arc-name">박서연 🔖</div>
+            <div class="arc-role">콘텐츠 크리에이터</div>
+            <div class="arc-memo" style="color:#aaa; font-style:italic;">메모를 남겨보세요...</div>
+          </div>
+          <div class="arc-meta">1주 전</div>
+        </div>
+        <div class="arc-row">
+          <div class="avatar">김</div>
+          <div class="arc-info">
+            <div class="arc-name">김도현 🔖</div>
+            <div class="arc-role">독립 재무설계사</div>
+            <div class="arc-memo" style="color:#aaa; font-style:italic;">메모를 남겨보세요...</div>
+          </div>
+          <div class="arc-meta">2주 전</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 받은 평판요청 (NEW) -->
+  <div class="phone-wrap">
+    <div class="screen-id new">P-07 · 받은 평판요청 ← ⑦ NEW 탭</div>
+    <div class="phone tall">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">←</span><span class="nav-title">아카이브</span></div>
+      <div class="tabs">
+        <div class="tab">저장한 프로필 3</div>
+        <div class="tab">🕐 최근 본</div>
+        <div class="tab active">받은 평판요청 <span style="background:#e53935; color:#fff; border-radius:8px; padding:1px 4px; font-size:6px; margin-left:2px;">2</span></div>
+      </div>
+      <div class="content">
+        <div class="caption" style="margin-bottom:8px;">상대방이 나에게 경험을 남겨달라고 요청했어요.</div>
+        <!-- 요청 1 -->
+        <div class="card" style="margin-bottom:6px;">
+          <div class="req-row" style="border:none; padding:0;">
+            <div class="avatar">이</div>
+            <div class="req-info" style="margin-left:6px;">
+              <div class="req-name">이지민</div>
+              <div class="req-msg">스타트업 마케터 · "같이 일해봤는데 꼭 경험 남겨주세요 🙏"</div>
+              <div class="req-meta">방금 전</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:4px; margin-top:6px;">
+            <button class="btn btn-primary" style="flex:1; margin:0; padding:5px; font-size:7px;">경험 남기기</button>
+            <button class="btn btn-outline" style="flex:1; margin:0; padding:5px; font-size:7px;">나중에</button>
+          </div>
+        </div>
+        <!-- 요청 2 -->
+        <div class="card" style="margin-bottom:6px;">
+          <div class="req-row" style="border:none; padding:0;">
+            <div class="avatar">최</div>
+            <div class="req-info" style="margin-left:6px;">
+              <div class="req-name">최지원</div>
+              <div class="req-msg">VC 심사역 · 요청 메시지 없음</div>
+              <div class="req-meta">2일 전</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:4px; margin-top:6px;">
+            <button class="btn btn-primary" style="flex:1; margin:0; padding:5px; font-size:7px;">경험 남기기</button>
+            <button class="btn btn-outline" style="flex:1; margin:0; padding:5px; font-size:7px;">나중에</button>
+          </div>
+        </div>
+        <!-- 완료된 요청 -->
+        <div style="font-size:7px; color:#888; margin-top:10px; border-top:1px solid #f0f0f0; padding-top:8px;">완료한 요청 1개</div>
+        <div class="arc-row" style="opacity:0.5;">
+          <div class="avatar">박</div>
+          <div class="arc-info"><div class="arc-name">박서연</div><div class="arc-role">콘텐츠 크리에이터</div></div>
+          <div style="font-size:6.5px; color:#1a7a1a; font-weight:700;">✓ 완료</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ─────────────────────────── 다른 사람의 BYRO ─────────────────────────── -->
+<div class="section-label">다른 사람의 Byro (공개 프로필)</div>
+<div class="row">
+
+  <!-- P-01 공개 프로필 (저장버튼 + 인스타 횡스크롤) -->
+  <div class="phone-wrap">
+    <div class="screen-id changed">P-01 · 공개 프로필 (SNS 접힘) ← ④⑧ 변경</div>
+    <div class="phone xtall">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav">
+        <span class="nav-back">← byro.me/@gangjunmin</span>
+        <span style="font-size:9px; margin-left:auto; display:flex; gap:6px; align-items:center;">
+          <span>🔖</span>
+          <span style="color:#555;">공유</span>
+        </span>
+      </div>
+      <div class="content">
+        <!-- 헤더 -->
+        <div style="display:flex; gap:8px; align-items:flex-start; margin-bottom:8px;">
+          <div class="avatar-lg" style="margin:0;">이</div>
+          <div style="flex:1;">
+            <div style="font-size:10px; font-weight:800;">이지민</div>
+            <div style="font-size:7.5px; color:#555;">스타트업 마케터 4년 경력</div>
+            <div style="font-size:7px; color:#888;">연세대학교 경영학과 졸업</div>
+          </div>
+          <button class="btn-sm btn-sm-primary" style="font-size:7px; padding:4px 8px;">🔖 저장 <span class="new-note">NEW</span></button>
+        </div>
+        <div class="body">스타트업 생태계에서 브랜드와 사람을 연결하는 마케터입니다. 데이터 기반 캠페인과 커뮤니티 빌딩에 강점이 있어요.</div>
+        <div class="divider"></div>
+        <!-- SNS -->
+        <div class="h3" style="margin-bottom:4px;">SNS</div>
+        <div class="sns-row">
+          <span class="sns-icon">📸</span>
+          <div class="sns-info"><div class="sns-name">Instagram <span class="badge-verified">✓ 인증됨</span></div></div>
+          <span style="font-size:9px; color:#555;">∨</span>
+        </div>
+        <div class="sns-row" style="border:none;">
+          <span class="sns-icon">in</span>
+          <div class="sns-info"><div class="sns-name">LinkedIn <span class="badge-verified">✓ 인증됨</span></div></div>
+          <span style="font-size:9px; color:#555;">∨</span>
+        </div>
+        <div class="divider"></div>
+        <!-- 검증 -->
+        <div class="h3" style="margin-bottom:4px;">인증</div>
+        <div class="verif-row"><span class="verif-icon">💼</span><div class="verif-info"><div class="verif-name">커리어 지속성 <span class="badge-verified">✓ 인증됨</span></div><div class="verif-sub">평균 대비 128% 장기 재직</div></div></div>
+        <div class="verif-row" style="border:none;"><span class="verif-icon">🤝</span><div class="verif-info"><div class="verif-name">리멤버 직업 네트워크 <span class="badge-verified">✓ 인증됨</span></div><div class="verif-sub">스타트업 마케팅 중심의 인맥 구조</div></div></div>
+        <div class="divider"></div>
+        <!-- 경험 -->
+        <div class="h3" style="margin-bottom:4px;">경험</div>
+        <div style="font-size:7.5px; margin-bottom:2px;">🎤 강연/연설 · 2023 TEDx Seoul</div>
+        <div style="font-size:7.5px;">🌏 해외 협업 · 일본 파트너사 6개월</div>
+        <div class="divider"></div>
+        <!-- 평판 -->
+        <div class="h3" style="margin-bottom:4px;">평판</div>
+        <div class="chip-wrap">
+          <div class="chip active">전문적인 5</div>
+          <div class="chip active">신뢰할 수 있는 4</div>
+          <div class="chip active">통찰력 있는 2</div>
+        </div>
+        <div style="font-size:7px; color:#888; margin-top:3px;">총 11회</div>
+        <div class="divider"></div>
+        <!-- 방명록 미리보기 -->
+        <div class="h3" style="margin-bottom:4px;">방명록</div>
+        <div class="gb-row">
+          <div class="avatar" style="font-size:8px;">강</div>
+          <div class="gb-content"><div class="gb-name">강민준</div><div class="gb-text">정말 통찰력 있는 분이에요.</div><div class="gb-meta">2일 전</div></div>
+        </div>
+        <div class="gb-row" style="border:none;">
+          <div class="avatar" style="font-size:8px;">박</div>
+          <div class="gb-content"><div class="gb-name">박서연</div><div class="gb-text">대화가 정말 편하고 에너지가 넘치는 분.</div><div class="gb-meta">5일 전</div></div>
+        </div>
+        <div style="font-size:7.5px; color:#0d47a1; text-align:center; margin-top:4px;">더보기 ›</div>
+      </div>
+      <div class="bottom-bar" style="display:flex; gap:6px;">
+        <button class="btn btn-outline" style="flex:1; margin:0; font-size:7px;">피드백 요청</button>
+        <button class="btn btn-primary" style="flex:1; margin:0; font-size:7px;">+ 경험 남기기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- P-01 SNS 펼침 + 횡스크롤 피드 -->
+  <div class="phone-wrap">
+    <div class="screen-id changed">P-01 · SNS 펼침 + 인스타 횡스크롤 ← ④ 변경</div>
+    <div class="phone xtall">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav">
+        <span class="nav-back">← byro.me/@gangjunmin</span>
+        <span style="margin-left:auto; font-size:9px; display:flex; gap:6px;"><span>🔖</span><span style="color:#555;">공유</span></span>
+      </div>
+      <div class="content">
+        <!-- 헤더 축약 -->
+        <div style="display:flex; gap:6px; align-items:center; margin-bottom:6px;">
+          <div class="avatar">이</div>
+          <div style="flex:1;"><div style="font-size:9px; font-weight:800;">이지민</div><div style="font-size:7px; color:#888;">스타트업 마케터 4년 경력</div></div>
+          <button class="btn-sm btn-sm-primary" style="font-size:7px;">🔖 저장</button>
+        </div>
+        <div class="divider"></div>
+        <div class="h3" style="margin-bottom:4px;">SNS</div>
+        <!-- Instagram 펼침 -->
+        <div class="sns-row">
+          <span class="sns-icon">📸</span>
+          <div class="sns-info"><div class="sns-name">Instagram <span class="badge-verified">✓ 인증됨</span></div></div>
+          <span style="font-size:9px; color:#555; font-weight:700;">∧ 접기</span>
+        </div>
+        <div style="padding: 4px 0 6px;">
+          <div style="font-size:7px; font-weight:700; color:#333; margin-bottom:3px;">AI 요약</div>
+          <div class="card-gray" style="font-size:7px; margin-bottom:5px;">스타트업 마케팅 관련 콘텐츠를 주로 공유하며, 네트워킹 행사 참석이 잦습니다.</div>
+          <div style="font-size:7px; font-weight:700; color:#333; margin-bottom:3px;">최신 피드 <span class="change-note">← 횡스크롤</span></div>
+          <div class="hscroll-wrap">
+            <div class="feed-thumb">피드1</div>
+            <div class="feed-thumb">피드2</div>
+            <div class="feed-thumb">피드3</div>
+            <div class="feed-thumb" style="background:#f0f0f0; border:1px dashed #ccc;">+더보기</div>
+          </div>
+          <div class="hscroll-hint">← 좌우로 스크롤해 더 보기 →</div>
+          <div style="font-size:6.5px; color:#555; margin-top:3px;">instagram.com/jimin_lee</div>
+        </div>
+        <!-- LinkedIn 접힘 -->
+        <div class="sns-row" style="border:none;">
+          <span class="sns-icon">in</span>
+          <div class="sns-info"><div class="sns-name">LinkedIn <span class="badge-verified">✓ 인증됨</span></div></div>
+          <span style="font-size:9px; color:#555;">∨ 펼치기</span>
+        </div>
+        <div class="divider"></div>
+        <!-- 검증 -->
+        <div class="h3" style="margin-bottom:4px;">인증</div>
+        <div class="verif-row"><span class="verif-icon">💼</span><div class="verif-info"><div class="verif-name">커리어 지속성 <span class="badge-verified">✓ 인증됨</span></div><div class="verif-sub">평균 대비 128% 장기 재직</div></div></div>
+        <div class="verif-row" style="border:none;"><span class="verif-icon">🤝</span><div class="verif-info"><div class="verif-name">리멤버 직업 네트워크 <span class="badge-verified">✓ 인증됨</span></div><div class="verif-sub">스타트업 마케팅 중심의 인맥 구조</div></div></div>
+        <div class="divider"></div>
+        <div class="h3" style="margin-bottom:4px;">경험</div>
+        <div style="font-size:7.5px; margin-bottom:2px;">🎤 강연/연설 · 2023 TEDx Seoul</div>
+        <div style="font-size:7.5px;">🌏 해외 협업 · 일본 파트너사 6개월</div>
+        <div class="divider"></div>
+        <div class="h3" style="margin-bottom:4px;">평판</div>
+        <div class="chip-wrap">
+          <div class="chip active">전문적인 5</div>
+          <div class="chip active">신뢰할 수 있는 4</div>
+          <div class="chip active">통찰력 있는 2</div>
+        </div>
+      </div>
+      <div class="bottom-bar" style="display:flex; gap:6px;">
+        <button class="btn btn-outline" style="flex:1; margin:0; font-size:7px;">피드백 요청</button>
+        <button class="btn btn-primary" style="flex:1; margin:0; font-size:7px;">+ 경험 남기기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- P-02 경험 남기기 -->
+  <div class="phone-wrap">
+    <div class="screen-id">P-02 · 경험 남기기 — 모달</div>
+    <div class="phone tall">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div style="background:#111; color:#fff; padding:10px; text-align:center;">
+        <div class="avatar-lg" style="background:#555; color:#fff;">이</div>
+        <div style="font-size:8px; font-weight:700; margin-top:4px;">이지민</div>
+        <div style="font-size:7px; color:#aaa;">스타트업 마케터</div>
+        <div style="font-size:7px; margin-top:4px;">전문적인 5 · 신뢰할 수 있는 4</div>
+      </div>
+      <div class="content">
+        <div class="h3" style="margin-bottom:4px;">이지민 님과의 경험을<br>키워드로 남겨주세요</div>
+        <div class="caption">최대 5개</div>
+        <div class="chip-wrap" style="margin:6px 0;">
+          <div class="chip active">전문적인</div>
+          <div class="chip">신뢰할 수 있는</div>
+          <div class="chip active">통찰력 있는</div>
+          <div class="chip">실행력 있는</div>
+          <div class="chip">유쾌한</div>
+          <div class="chip">진정성 있는</div>
+        </div>
+        <div class="divider"></div>
+        <div class="label">한마디 (선택)</div>
+        <textarea class="input-box" style="height:40px; resize:none; font-size:7.5px;" placeholder="짧게 남겨주세요 (최대 100자)"></textarea>
+        <div style="display:flex; align-items:center; gap:4px; margin-bottom:8px;">
+          <input type="checkbox" style="width:10px; height:10px;">
+          <div style="font-size:7px; color:#888;">? 익명으로 남기기</div>
+          <div style="font-size:7px; color:#0d47a1; margin-left:auto;">로그인하면 이름으로 남길 수 있어요 →</div>
+        </div>
+        <button class="btn btn-primary">경험 남기기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Visitor Done -->
+  <div class="phone-wrap">
+    <div class="screen-id">Visitor Done · 경험 완료</div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+      <div class="nav"><span class="nav-back">← 경험 남기기 완료</span></div>
+      <div class="content" style="text-align:center; padding-top:24px;">
+        <div style="font-size:32px; margin-bottom:8px;">🤝</div>
+        <div class="h2" style="margin-bottom:6px;">경험을 남겼어요!</div>
+        <div class="body">이지민 님도 평판이 쌓였어요.<br>서로 연결된 신뢰가 만들어졌습니다.</div>
+        <div class="divider" style="margin:12px 0;"></div>
+        <div class="info-box" style="text-align:left;">
+          💡 <b>나도 평판을 받고 싶다면?</b><br>
+          내 Byro 링크를 공유하면 상대방도 나에게 경험을 남길 수 있어요.
+        </div>
+        <button class="btn btn-primary" style="margin-top:8px;">내 Byro 링크 공유하기</button>
+        <button class="btn btn-outline">내 프로필로 돌아가기</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Legend -->
+<div style="margin-top:40px; padding:16px; background:#222; border-radius:10px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+  <div style="color:#fff; font-size:10px; font-weight:700; margin-right:8px;">LEGEND</div>
+  <div style="display:flex; align-items:center; gap:4px;"><span style="font-size:8px; font-weight:700; color:#f0a500;">스크린 ID</span><span style="color:#888; font-size:8px;">= 신규 화면</span></div>
+  <div style="display:flex; align-items:center; gap:4px;"><span style="font-size:8px; font-weight:700; color:#64b5f6;">스크린 ID</span><span style="color:#888; font-size:8px;">= 변경된 화면</span></div>
+  <div style="display:flex; align-items:center; gap:4px;"><span class="badge-beta" style="margin:0;">오픈베타</span><span style="color:#888; font-size:8px;">= 오픈베타 전용 기능</span></div>
+  <div style="display:flex; align-items:center; gap:4px;"><span class="badge-phase2" style="margin:0;">Phase 2</span><span style="color:#888; font-size:8px;">= Phase 2 예고</span></div>
+  <div style="display:flex; align-items:center; gap:4px;"><span class="change-note" style="margin:0;">변경</span><span style="color:#888; font-size:8px;">= v2에서 바뀐 부분</span></div>
+  <div style="display:flex; align-items:center; gap:4px;"><span class="new-note" style="margin:0;">NEW</span><span style="color:#888; font-size:8px;">= v2에서 새로 추가</span></div>
+</div>
+
+<div style="color:#555; font-size:9px; text-align:center; margin-top:16px; margin-bottom:8px;">Byro Lofi Wireframe v2.0 · 총 24 screens</div>
+
+</body>
+</html>
